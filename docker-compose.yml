@@ -27,13 +27,3 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       #KAFKA_CREATE_TOPICS: "XCION_SBC_TBL_UNITED:1:1,NSCN_SBC_TBL:1:1" # Topic명:Partition개수:Replica개수
-
-  delivery:
-    build: .
-    image: aws-msa-sample-delivery:latest
-    container_name: delivery
-    ports:
-      - "8080:8080"
-    depends_on:
-      - zookeeper
-      - broker

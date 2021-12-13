@@ -19,6 +19,7 @@ subprojects {
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'java'
+    apply plugin: 'groovy'
 
     configurations {
         compileOnly {
@@ -37,6 +38,13 @@ subprojects {
         implementation 'org.springframework.boot:spring-boot-starter'
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
+        testImplementation('org.springframework.boot:spring-boot-starter-test')
+        testImplementation group: 'org.spockframework', name: 'spock-core', version: '2.0-groovy-3.0'
+        testImplementation group: 'org.spockframework', name: 'spock-spring', version: '2.0-groovy-3.0'
+    }
+
+    test {
+        useJUnitPlatform()
     }
 }
 

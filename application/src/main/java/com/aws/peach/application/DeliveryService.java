@@ -36,7 +36,9 @@ public class DeliveryService { // 백오피스
         return delivery.orElseThrow(() -> new DeliveryNotFoundException(orderNo));
     }
 
-    public void startShipping() {
-        // - 해당 배송 이력의 상태를 업데이트 한다
+    public Delivery ship(final OrderNo orderNo) {
+        Optional<Delivery> delivery = repository.findByOrderNo(orderNo);
+        delivery.ifPresent(Delivery::ship);
+        return delivery.orElseThrow(() -> new DeliveryNotFoundException(orderNo));
     }
 }

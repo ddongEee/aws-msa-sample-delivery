@@ -23,6 +23,13 @@ public class Delivery { // root entity
         this.status = DeliveryStatus.PREPARING;
     }
 
+    public void ship() {
+        if (this.status != DeliveryStatus.PACKAGING) {
+            throw new DeliveryPrepareException(this.status);
+        }
+        this.status = DeliveryStatus.SHIPPED;
+    }
+
     public static class Builder {
         private final OrderNo orderNo;
         private DeliveryStatus status;

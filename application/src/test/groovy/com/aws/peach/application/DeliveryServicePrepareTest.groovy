@@ -33,7 +33,7 @@ class DeliveryServicePrepareTest extends Specification {
         given:
         OrderNo orderNo = new OrderNo("oid")
         DeliveryRepository repository = stubDeliveryRepository(orderNo,
-                new Delivery.Builder(orderNo).status(DeliveryStatus.READY_SHIPPING).build())
+                new Delivery.Builder(orderNo).status(DeliveryStatus.PACKAGING).build())
         DeliveryService service = new DeliveryService(repository)
 
         when:

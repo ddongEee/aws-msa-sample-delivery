@@ -7,6 +7,7 @@ import com.aws.peach.domain.delivery.exception.DeliveryNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @Component
 public class DeliveryService { // 백오피스
@@ -31,12 +32,22 @@ public class DeliveryService { // 백오피스
     }
 
     public Delivery prepare(final OrderNo orderNo) {
-        Optional<Delivery> delivery = repository.findByOrderNo(orderNo);
-        delivery.ifPresent(Delivery::prepare);
-        return delivery.orElseThrow(() -> new DeliveryNotFoundException(orderNo));
+        // TODO: return type - Delivery or DeliveryStatus ?
+        // TODO: DB 저장 및 메세지 발행
+        return updateDeliveryStatus(orderNo, Delivery::prepare);
     }
 
-    public void startShipping() {
-        // - 해당 배송 이력의 상태를 업데이트 한다
+    public Delivery pack(final OrderNo orderNo) {
+        return updateDeliveryStatus(orderNo, Delivery::pack);
+    }
+
+    public Delivery ship(final OrderNo orderNo) {
+        return updateDeliveryStatus(orderNo, Delivery::ship);
+    }
+
+    private Delivery updateDeliveryStatus(final OrderNo orderNo, final Consumer<Delivery> updater) {
+        Optional<Delivery> delivery = repository.findByOrderNo(orderNo);
+        delivery.ifPresent(updater);
+        return delivery.orElseThrow(() -> new DeliveryNotFoundException(orderNo));
     }
 }

@@ -8,7 +8,7 @@ import com.aws.peach.domain.delivery.exception.DeliveryNotFoundException
 import com.aws.peach.domain.delivery.exception.DeliveryPrepareException
 import spock.lang.Specification
 
-class DeliveryServicePrepareTest extends Specification {
+class DeliveryServiceShipTest extends Specification {
 
     def stubDeliveryRepository(OrderNo orderNo, Delivery delivery) {
         DeliveryRepository repository = Stub()
@@ -23,37 +23,37 @@ class DeliveryServicePrepareTest extends Specification {
         DeliveryService service = new DeliveryService(repository)
 
         when:
-        service.prepare(orderNo)
+        service.ship(orderNo)
 
         then:
         thrown(DeliveryNotFoundException.class)
     }
 
-    def "if delivery status not 'ORDER_RECEIVED', abort request"() {
+    def "if delivery status not 'PACKAGING', abort request"() {
         given:
         OrderNo orderNo = new OrderNo("oid")
         DeliveryRepository repository = stubDeliveryRepository(orderNo,
-                new Delivery.Builder(orderNo).status(DeliveryStatus.PACKAGING).build())
+                new Delivery.Builder(orderNo).status(DeliveryStatus.ORDER_RECEIVED).build())
         DeliveryService service = new DeliveryService(repository)
 
         when:
-        service.prepare(orderNo)
+        service.ship(orderNo)
 
         then:
         thrown(DeliveryPrepareException.class)
     }
 
-    def "upon success, mark delivery order as 'PREPARING'"() {
+    def "upon success, mark delivery order as 'SHIPPED'"() {
         given:
         OrderNo orderNo = new OrderNo("1")
         DeliveryRepository repository = stubDeliveryRepository(orderNo,
-                new Delivery.Builder(orderNo).build())
+                new Delivery.Builder(orderNo).status(DeliveryStatus.PACKAGING).build())
         DeliveryService service = new DeliveryService(repository)
 
         when:
-        Delivery delivery = service.prepare(orderNo)
+        Delivery delivery = service.ship(orderNo)
 
         then:
-        delivery.status == DeliveryStatus.PREPARING
+        delivery.status == DeliveryStatus.SHIPPED
     }
 }

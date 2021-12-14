@@ -8,7 +8,7 @@ import com.aws.peach.domain.delivery.exception.DeliveryNotFoundException
 import com.aws.peach.domain.delivery.exception.DeliveryPrepareException
 import spock.lang.Specification
 
-class DeliveryServicePrepareTest extends Specification {
+class DeliveryServicePackageTest extends Specification {
 
     def stubDeliveryRepository(OrderNo orderNo, Delivery delivery) {
         DeliveryRepository repository = Stub()
@@ -23,37 +23,37 @@ class DeliveryServicePrepareTest extends Specification {
         DeliveryService service = new DeliveryService(repository)
 
         when:
-        service.prepare(orderNo)
+        service.pack(orderNo)
 
         then:
         thrown(DeliveryNotFoundException.class)
     }
 
-    def "if delivery status not 'ORDER_RECEIVED', abort request"() {
+    def "if delivery status not 'PREPARING', abort request"() {
         given:
         OrderNo orderNo = new OrderNo("oid")
         DeliveryRepository repository = stubDeliveryRepository(orderNo,
-                new Delivery.Builder(orderNo).status(DeliveryStatus.PACKAGING).build())
+                new Delivery.Builder(orderNo).status(DeliveryStatus.SHIPPED).build())
         DeliveryService service = new DeliveryService(repository)
 
         when:
-        service.prepare(orderNo)
+        service.pack(orderNo)
 
         then:
         thrown(DeliveryPrepareException.class)
     }
 
-    def "upon success, mark delivery order as 'PREPARING'"() {
+    def "upon success, mark delivery order as 'PACKAGING'"() {
         given:
         OrderNo orderNo = new OrderNo("1")
         DeliveryRepository repository = stubDeliveryRepository(orderNo,
-                new Delivery.Builder(orderNo).build())
+                new Delivery.Builder(orderNo).status(DeliveryStatus.PREPARING).build())
         DeliveryService service = new DeliveryService(repository)
 
         when:
-        Delivery delivery = service.prepare(orderNo)
+        Delivery delivery = service.pack(orderNo)
 
         then:
-        delivery.status == DeliveryStatus.PREPARING
+        delivery.status == DeliveryStatus.PACKAGING
     }
 }

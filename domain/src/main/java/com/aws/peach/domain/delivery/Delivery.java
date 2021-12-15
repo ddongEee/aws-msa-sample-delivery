@@ -1,18 +1,25 @@
 package com.aws.peach.domain.delivery;
 
 import com.aws.peach.domain.delivery.exception.DeliveryPrepareException;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
-public class Delivery { // root entity
-//    private final String id;
-    private final OrderNo orderNo; // monolith 서비스에서 생성한 orderNo
-//    private final String sender;
-//    private final String senderAddress;
-//    private final String receiver;
-//    private final String receiverAddress;
+import java.util.UUID;
+
+@Builder(access = AccessLevel.PACKAGE)
+@AllArgsConstructor
+public class Delivery {
+    private DeliveryId id;
+    private OrderNo orderNo; // monolith 서비스에서 생성한 orderNo
+    private Sender sender;
+    private Receiver receiver;
     private DeliveryStatus status;
 
-    private Delivery(OrderNo orderNo) {
+    public Delivery(OrderNo orderNo, Sender sender, Receiver receiver) {
         this.orderNo = orderNo;
+        this.sender = sender;
+        this.receiver = receiver;
         this.status = DeliveryStatus.ORDER_RECEIVED;
     }
 
@@ -37,25 +44,31 @@ public class Delivery { // root entity
         this.status = DeliveryStatus.SHIPPED;
     }
 
-    public static class Builder {
-        private final OrderNo orderNo;
-        private DeliveryStatus status;
+    public DeliveryId getId() {
+        return id;
+    }
 
-        public Builder(OrderNo orderNo) {
-            this.orderNo = orderNo;
-        }
+    public void assignNewId() {
+        UUID uuid = UUID.randomUUID();
+        this.id = new DeliveryId(uuid.toString());
+    }
 
-        public Builder status(DeliveryStatus status) {
-            this.status = status;
-            return this;
-        }
+    public OrderNo getOrderNo() {
+        return orderNo;
+    }
 
-        public Delivery build() {
-            Delivery delivery = new Delivery(this.orderNo);
-            if (this.status != null) {
-                delivery.status = status;
-            }
-            return delivery;
-        }
+    @Builder
+    public static class Sender {
+        private final String id;
+        private final String name;
+    }
+
+    @Builder
+    public static class Receiver {
+        private final String name;
+        private final String city;
+        private final String zipCode;
+        private final String country;
+        private final String telephone;
     }
 }

@@ -1,6 +1,7 @@
 package com.aws.peach.application
 
 import com.aws.peach.domain.delivery.Delivery
+import com.aws.peach.domain.delivery.DeliveryId
 import com.aws.peach.domain.delivery.DeliveryRepository
 import com.aws.peach.domain.delivery.DeliveryStatus
 import com.aws.peach.domain.delivery.OrderNo
@@ -33,7 +34,7 @@ class DeliveryServicePrepareTest extends Specification {
         given:
         OrderNo orderNo = new OrderNo("oid")
         DeliveryRepository repository = stubDeliveryRepository(orderNo,
-                new Delivery.Builder(orderNo).status(DeliveryStatus.PACKAGING).build())
+                Delivery.builder().orderNo(orderNo).status(DeliveryStatus.PACKAGING).build())
         DeliveryService service = new DeliveryService(repository)
 
         when:
@@ -45,15 +46,17 @@ class DeliveryServicePrepareTest extends Specification {
 
     def "upon success, mark delivery order as 'PREPARING'"() {
         given:
+        DeliveryId did = new DeliveryId("123")
         OrderNo orderNo = new OrderNo("1")
-        DeliveryRepository repository = stubDeliveryRepository(orderNo,
-                new Delivery.Builder(orderNo).build())
+        Delivery delivery = Mock();
+        delivery.getId() >> did
+        DeliveryRepository repository = stubDeliveryRepository(orderNo, delivery)
         DeliveryService service = new DeliveryService(repository)
 
         when:
-        Delivery delivery = service.prepare(orderNo)
+        DeliveryId did2 = service.prepare(orderNo)
 
         then:
-        delivery.status == DeliveryStatus.PREPARING
+        1 * delivery.prepare()
     }
 }

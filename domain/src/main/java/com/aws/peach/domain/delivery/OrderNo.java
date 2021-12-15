@@ -1,5 +1,8 @@
 package com.aws.peach.domain.delivery;
 
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode
 public class OrderNo {
     public final String value;
 

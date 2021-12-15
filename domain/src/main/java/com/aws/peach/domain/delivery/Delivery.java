@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
+import java.util.UUID;
+
 @Builder(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
 public class Delivery {
@@ -44,6 +46,15 @@ public class Delivery {
 
     public DeliveryId getId() {
         return id;
+    }
+
+    public void assignNewId() {
+        UUID uuid = UUID.randomUUID();
+        this.id = new DeliveryId(uuid.toString());
+    }
+
+    public OrderNo getOrderNo() {
+        return orderNo;
     }
 
     @Builder

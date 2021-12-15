@@ -1,6 +1,7 @@
 package com.aws.peach.application
 
 import com.aws.peach.domain.delivery.Delivery
+import com.aws.peach.domain.delivery.DeliveryId
 import com.aws.peach.domain.delivery.DeliveryRepository
 import com.aws.peach.domain.delivery.DeliveryStatus
 import com.aws.peach.domain.delivery.OrderNo
@@ -45,15 +46,17 @@ class DeliveryServiceShipTest extends Specification {
 
     def "upon success, mark delivery order as 'SHIPPED'"() {
         given:
+        DeliveryId did = new DeliveryId("123")
         OrderNo orderNo = new OrderNo("1")
-        DeliveryRepository repository = stubDeliveryRepository(orderNo,
-                Delivery.builder().orderNo(orderNo).status(DeliveryStatus.PACKAGING).build())
+        Delivery delivery = Mock();
+        delivery.getId() >> did
+        DeliveryRepository repository = stubDeliveryRepository(orderNo, delivery)
         DeliveryService service = new DeliveryService(repository)
 
         when:
-        Delivery delivery = service.ship(orderNo)
+        DeliveryId did2 = service.ship(orderNo)
 
         then:
-        delivery.status == DeliveryStatus.SHIPPED
+        1 * delivery.ship()
     }
 }

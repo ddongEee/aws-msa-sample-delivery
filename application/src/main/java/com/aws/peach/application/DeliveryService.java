@@ -1,8 +1,7 @@
 package com.aws.peach.application;
 
-import com.aws.peach.domain.delivery.Delivery;
-import com.aws.peach.domain.delivery.DeliveryRepository;
-import com.aws.peach.domain.delivery.OrderNo;
+import com.aws.peach.domain.delivery.*;
+import com.aws.peach.domain.delivery.exception.DeliveryAlreadyExistsException;
 import com.aws.peach.domain.delivery.exception.DeliveryNotFoundException;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +9,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 @Component
-public class DeliveryService { // 백오피스
+public class DeliveryService {
 
     private final DeliveryRepository repository;
 
@@ -18,10 +17,14 @@ public class DeliveryService { // 백오피스
         this.repository = repository;
     }
 
-    public void receiveOrder(Order order) {
-        // 1. 주문 유효성 검사 수행 (예: 주소 확인)
-        // 2-1. 성공시 배송 요청 내역 저장 (DB)
-        // 2-2. 실패시 자세한 오류 내역을 이력으로 저장 (DB)
+    public DeliveryId createDeliveryOrder(Order order) {
+        Optional<Delivery> existingDelivery = repository.findByOrderNo(order.getOrderNo());
+        if (existingDelivery.isPresent()) {
+            throw new DeliveryAlreadyExistsException(existingDelivery.get().getId());
+        }
+        Delivery delivery = Order.newDelivery(order);
+        delivery = repository.save(delivery);
+        return delivery.getId();
     }
 
     public void retrieveShipping() {

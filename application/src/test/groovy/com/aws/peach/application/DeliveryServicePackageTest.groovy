@@ -33,7 +33,7 @@ class DeliveryServicePackageTest extends Specification {
         given:
         OrderNo orderNo = new OrderNo("oid")
         DeliveryRepository repository = stubDeliveryRepository(orderNo,
-                new Delivery.Builder(orderNo).status(DeliveryStatus.SHIPPED).build())
+                Delivery.builder().orderNo(orderNo).status(DeliveryStatus.SHIPPED).build())
         DeliveryService service = new DeliveryService(repository)
 
         when:
@@ -47,7 +47,7 @@ class DeliveryServicePackageTest extends Specification {
         given:
         OrderNo orderNo = new OrderNo("1")
         DeliveryRepository repository = stubDeliveryRepository(orderNo,
-                new Delivery.Builder(orderNo).status(DeliveryStatus.PREPARING).build())
+                Delivery.builder().orderNo(orderNo).status(DeliveryStatus.PREPARING).build())
         DeliveryService service = new DeliveryService(repository)
 
         when:

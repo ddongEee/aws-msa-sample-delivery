@@ -9,7 +9,7 @@ public class DeliveryAlreadyExistsException extends RuntimeException {
         this.deliveryId = deliveryId;
     }
 
-    public DeliveryId getDeliveryId() {
-        return deliveryId;
+    public String getDeliveryId() {
+        return deliveryId.value;
     }
 }

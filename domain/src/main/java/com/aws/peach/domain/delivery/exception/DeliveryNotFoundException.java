@@ -9,7 +9,7 @@ public class DeliveryNotFoundException extends RuntimeException {
         this.orderNo = orderNo;
     }
 
-    public OrderNo getOrderNo() {
-        return orderNo;
+    public String getOrderNo() {
+        return orderNo.value;
     }
 }

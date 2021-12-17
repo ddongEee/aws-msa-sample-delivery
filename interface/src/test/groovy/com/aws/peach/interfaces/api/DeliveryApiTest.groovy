@@ -1,0 +1,111 @@
+package com.aws.peach.interfaces.api
+
+import com.aws.peach.application.DeliveryDetail
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.http.HttpStatus
+import spock.lang.Specification
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class DeliveryApiTest extends Specification {
+
+    @LocalServerPort
+    private int port;
+
+    @Autowired
+    private TestRestTemplate restTemplate;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    def "should create delivery"() {
+        when:
+        def orderNo = "1"
+        def entity = this.restTemplate.postForEntity(url("/delivery"),
+                createReceiveDeliveryOrderRequest(orderNo),
+                DeliveryResponse.class)
+
+        then:
+        entity.getStatusCode() == HttpStatus.OK
+        entity.getBody().getDeliveryId() != null
+    }
+
+    def "should query delivery with delivery_id"() {
+        given:
+        def orderNo = "2"
+        def preEntity = this.restTemplate.postForEntity(url("/delivery"),
+                createReceiveDeliveryOrderRequest(orderNo),
+                DeliveryResponse.class)
+        def deliveryId = preEntity.getBody().getDeliveryId()
+
+        when:
+        def entity = this.restTemplate.getForEntity(url("/delivery/" + deliveryId), DeliveryDetail.class)
+
+        then:
+        entity.getStatusCode() == HttpStatus.OK
+        entity.getBody().getDeliveryId() == deliveryId
+        entity.getBody().getOrderNo() == orderNo
+    }
+
+    def "should query delivery with order_no"() {
+        given:
+        def orderNo = "3"
+        def preEntity = this.restTemplate.postForEntity(url("/delivery" ),
+                createReceiveDeliveryOrderRequest(orderNo),
+                DeliveryResponse.class)
+        def deliveryId = preEntity.getBody().getDeliveryId()
+
+        when:
+        def entity = this.restTemplate.getForEntity(url("/delivery?orderNo=" + orderNo), DeliveryDetail.class)
+
+        then:
+        entity.getStatusCode() == HttpStatus.OK
+        entity.getBody().getDeliveryId() == deliveryId
+        entity.getBody().getOrderNo() == orderNo
+    }
+
+    def url(String suffix) {
+        return "http://localhost:" + port + suffix
+    }
+
+    static def createReceiveDeliveryOrderRequest(String orderNo) {
+        def orderer = ReceiveDeliveryOrderRequest.Orderer.builder()
+                .memberId("PeachMan")
+                .name("Albert")
+                .build()
+        def orderLines = Arrays.asList(
+                createOrderLine("SKU1", "white peach", 5000, 1),
+                createOrderLine("SKU2", "yellow peach", 4000, 1)
+        );
+        def shippingInfo = ReceiveDeliveryOrderRequest.ShippingInfo.builder()
+                .country("South Korea")
+                .city("Seoul")
+                .zipCode("12345")
+                .telephoneNumber("010-1234-1234")
+                .receiver("Benjamin")
+                .build();
+        return ReceiveDeliveryOrderRequest.builder()
+                .orderNo(orderNo)
+                .orderer(orderer)
+                .orderLines(orderLines)
+                .orderState("PAID")
+                .orderDate("2021-12-16T05:29:23Z")
+                .shippingInformation(shippingInfo)
+                .build()
+    }
+
+    static def createOrderLine(String productId, String productName, int price, int qty) {
+        ReceiveDeliveryOrderRequest.OrderProduct product = ReceiveDeliveryOrderRequest.OrderProduct.builder()
+                .productId(productId)
+                .productName(productName)
+                .price(price)
+                .build()
+        return ReceiveDeliveryOrderRequest.OrderLine.builder()
+                    .orderProduct(product)
+                    .quantity(qty)
+                    .build();
+    }
+}

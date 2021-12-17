@@ -4,9 +4,11 @@ import com.aws.peach.domain.delivery.exception.DeliveryStateException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.util.UUID;
 
+@Getter
 @Builder(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
 public class Delivery {
@@ -57,12 +59,14 @@ public class Delivery {
         return orderNo;
     }
 
+    @Getter
     @Builder
     public static class Sender {
         private final String id;
         private final String name;
     }
 
+    @Getter
     @Builder
     public static class Receiver {
         private final String name;

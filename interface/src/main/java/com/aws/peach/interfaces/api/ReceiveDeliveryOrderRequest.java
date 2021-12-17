@@ -2,6 +2,7 @@ package com.aws.peach.interfaces.api;
 
 import com.aws.peach.application.Order;
 import com.aws.peach.domain.delivery.OrderNo;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -9,20 +10,21 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
+@Builder
 @ToString
 @Getter
 public class ReceiveDeliveryOrderRequest {
     @NotNull
-    private String orderNo;
+    private final String orderNo;
     @NotNull
-    private Orderer orderer;
+    private final Orderer orderer;
     @NotEmpty
-    private List<OrderLine> orderLines;
-    private String orderState;
+    private final List<OrderLine> orderLines;
+    private final String orderState;
     @NotNull
-    private String orderDate;
+    private final String orderDate;
     @NotNull
-    private ShippingInfo shippingInformation;
+    private final ShippingInfo shippingInformation;
 
     public static Order newOrder(ReceiveDeliveryOrderRequest req) {
         OrderNo orderNo = new OrderNo(req.orderNo);
@@ -45,41 +47,45 @@ public class ReceiveDeliveryOrderRequest {
                 .build();
     }
 
+    @Builder
     @Getter
     public static class Orderer {
         @NotNull
-        private String memberId;
+        private final String memberId;
         @NotNull
-        private String name;
+        private final String name;
     }
 
+    @Builder
     @Getter
     public static class OrderLine {
         @NotNull
-        private OrderProduct orderProduct;
-        private int quantity;
+        private final OrderProduct orderProduct;
+        private final int quantity;
     }
 
+    @Builder
     @Getter
     public static class OrderProduct {
         @NotNull
-        private String productId;
+        private final String productId;
         @NotNull
-        private String productName;
-        private int price;
+        private final String productName;
+        private final int price;
     }
 
+    @Builder
     @Getter
     public static class ShippingInfo {
         @NotNull
-        private String country;
+        private final String country;
         @NotNull
-        private String city;
+        private final String city;
         @NotNull
-        private String zipCode;
+        private final String zipCode;
         @NotNull
-        private String telephoneNumber;
+        private final String telephoneNumber;
         @NotNull
-        private String receiver;
+        private final String receiver;
     }
 }

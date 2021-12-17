@@ -3,12 +3,12 @@ package com.aws.peach.application;
 import com.aws.peach.domain.delivery.*;
 import com.aws.peach.domain.delivery.exception.DeliveryAlreadyExistsException;
 import com.aws.peach.domain.delivery.exception.DeliveryNotFoundException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 
-@Component
+@Service
 public class DeliveryService {
 
     private final DeliveryRepository repository;
@@ -25,13 +25,6 @@ public class DeliveryService {
         Delivery delivery = Order.newDelivery(order);
         delivery = repository.save(delivery);
         return delivery.getId();
-    }
-
-    public void retrieveShipping() {
-        // - shipment id 로 배송 이력을 조회할 수 있다
-        // - order id 로 배송 이력을 조회할 수 있다
-        // - 시간순으로 배송 이력을 정렬할 수 있다
-        // - 상태 기준으로 배송 이력을 조회할 수 있다
     }
 
     public DeliveryId prepare(final DeliveryId deliveryId) {

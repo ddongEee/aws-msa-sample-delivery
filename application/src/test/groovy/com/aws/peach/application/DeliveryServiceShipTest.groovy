@@ -4,27 +4,28 @@ import com.aws.peach.domain.delivery.Delivery
 import com.aws.peach.domain.delivery.DeliveryId
 import com.aws.peach.domain.delivery.DeliveryRepository
 import com.aws.peach.domain.delivery.DeliveryStatus
-import com.aws.peach.domain.delivery.OrderNo
 import com.aws.peach.domain.delivery.exception.DeliveryNotFoundException
-import com.aws.peach.domain.delivery.exception.DeliveryPrepareException
+import com.aws.peach.domain.delivery.exception.DeliveryStateException
 import spock.lang.Specification
 
 class DeliveryServiceShipTest extends Specification {
 
-    def stubDeliveryRepository(OrderNo orderNo, Delivery delivery) {
+    DeliveryId deliveryId = new DeliveryId("123")
+
+    def stubDeliveryRepository(DeliveryId deliveryId, Delivery retrievedDelivery) {
         DeliveryRepository repository = Stub()
-        repository.findByOrderNo(orderNo) >> Optional.ofNullable(delivery)
+        repository.findById(deliveryId) >> Optional.ofNullable(retrievedDelivery)
         return repository
     }
 
     def "if delivery not found, throw error"() {
         given:
-        OrderNo orderNo = new OrderNo("oid")
-        DeliveryRepository repository = stubDeliveryRepository(orderNo, null)
+        Delivery retrievedDelivery = null
+        DeliveryRepository repository = stubDeliveryRepository(deliveryId, retrievedDelivery)
         DeliveryService service = new DeliveryService(repository)
 
         when:
-        service.ship(orderNo)
+        service.ship(deliveryId)
 
         then:
         thrown(DeliveryNotFoundException.class)
@@ -32,31 +33,28 @@ class DeliveryServiceShipTest extends Specification {
 
     def "if delivery status not 'PACKAGING', abort request"() {
         given:
-        OrderNo orderNo = new OrderNo("oid")
-        DeliveryRepository repository = stubDeliveryRepository(orderNo,
-                Delivery.builder().orderNo(orderNo).status(DeliveryStatus.ORDER_RECEIVED).build())
+        Delivery retrievedDelivery = Delivery.builder().id(deliveryId).status(DeliveryStatus.ORDER_RECEIVED).build()
+        DeliveryRepository repository = stubDeliveryRepository(deliveryId, retrievedDelivery)
         DeliveryService service = new DeliveryService(repository)
 
         when:
-        service.ship(orderNo)
+        service.ship(deliveryId)
 
         then:
-        thrown(DeliveryPrepareException.class)
+        thrown(DeliveryStateException.class)
     }
 
     def "upon success, mark delivery order as 'SHIPPED'"() {
         given:
-        DeliveryId did = new DeliveryId("123")
-        OrderNo orderNo = new OrderNo("1")
-        Delivery delivery = Mock();
-        delivery.getId() >> did
-        DeliveryRepository repository = stubDeliveryRepository(orderNo, delivery)
+        Delivery retrievedDelivery = Mock();
+        retrievedDelivery.getId() >> deliveryId
+        DeliveryRepository repository = stubDeliveryRepository(deliveryId, retrievedDelivery)
         DeliveryService service = new DeliveryService(repository)
 
         when:
-        DeliveryId did2 = service.ship(orderNo)
+        DeliveryId did2 = service.ship(deliveryId)
 
         then:
-        1 * delivery.ship()
+        1 * retrievedDelivery.ship()
     }
 }

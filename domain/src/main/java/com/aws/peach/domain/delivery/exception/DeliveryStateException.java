@@ -2,12 +2,12 @@ package com.aws.peach.domain.delivery.exception;
 
 import com.aws.peach.domain.delivery.DeliveryId;
 
-public class DeliveryNotFoundException extends DeliveryException {
+public class DeliveryStateException extends DeliveryException {
     private final String msg;
 
-    public DeliveryNotFoundException(DeliveryId deliveryId) {
+    public DeliveryStateException(DeliveryId deliveryId) {
         super(deliveryId);
-        this.msg = String.format("delivery '%s' is not found", deliveryId.value);
+        this.msg = String.format("request is invalid for the delivery's ('%s') current state", deliveryId.value);
     }
 
     @Override

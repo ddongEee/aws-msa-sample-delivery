@@ -1,12 +1,14 @@
 package com.aws.peach.domain.delivery;
 
-import com.aws.peach.domain.delivery.exception.DeliveryPrepareException;
+import com.aws.peach.domain.delivery.exception.DeliveryStateException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.util.UUID;
 
+@Getter
 @Builder(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
 public class Delivery {
@@ -25,21 +27,21 @@ public class Delivery {
 
     public void prepare() {
         if (this.status != DeliveryStatus.ORDER_RECEIVED) {
-            throw new DeliveryPrepareException(this.status);
+            throw new DeliveryStateException(this.id);
         }
         this.status = DeliveryStatus.PREPARING;
     }
 
     public void pack() {
         if (this.status != DeliveryStatus.PREPARING) {
-            throw new DeliveryPrepareException(this.status);
+            throw new DeliveryStateException(this.id);
         }
         this.status = DeliveryStatus.PACKAGING;
     }
 
     public void ship() {
         if (this.status != DeliveryStatus.PACKAGING) {
-            throw new DeliveryPrepareException(this.status);
+            throw new DeliveryStateException(this.id);
         }
         this.status = DeliveryStatus.SHIPPED;
     }
@@ -57,12 +59,14 @@ public class Delivery {
         return orderNo;
     }
 
+    @Getter
     @Builder
     public static class Sender {
         private final String id;
         private final String name;
     }
 
+    @Getter
     @Builder
     public static class Receiver {
         private final String name;

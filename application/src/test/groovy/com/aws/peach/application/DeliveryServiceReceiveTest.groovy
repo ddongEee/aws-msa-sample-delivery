@@ -10,12 +10,11 @@ import spock.lang.Specification
 class DeliveryServiceReceiveTest extends Specification {
 
     // test data
-    OrderNo orderNo;
+    DeliveryId deliveryId = new DeliveryId("123")
+    OrderNo orderNo = new OrderNo("oid")
     Order order;
 
     def setup() {
-        orderNo = new OrderNo("oid")
-
         Order.Orderer orderer = new Order.Orderer("1", "PeachMan")
         Order.Receiver receiver = Order.Receiver.builder()
                                     .name("Sandy")
@@ -29,15 +28,10 @@ class DeliveryServiceReceiveTest extends Specification {
                     .receiver(receiver).build()
     }
 
-    def stubDeliveryRepository(Delivery delivery) {
-        DeliveryRepository repository = Stub()
-        repository.findByOrderNo(orderNo) >> Optional.ofNullable(delivery)
-        return repository
-    }
-
     def "if delivery exists, throw error"() {
         given:
-        DeliveryRepository repository = stubDeliveryRepository(Mock(Delivery.class))
+        Delivery existingDelivery = createDelivery(deliveryId)
+        DeliveryRepository repository = stubDeliveryRepository(deliveryId, existingDelivery)
         DeliveryService service = new DeliveryService(repository)
 
         when:
@@ -49,9 +43,8 @@ class DeliveryServiceReceiveTest extends Specification {
 
     def "upon success, save delivery order as 'ORDER_RECEIVED'"() {
         given:
-        DeliveryRepository repository = stubDeliveryRepository(null)
-        Delivery saveResult = Delivery.builder().id(new DeliveryId("1")).build()
-        repository.save(_ as Delivery) >> saveResult
+        Delivery existingDelivery = null
+        DeliveryRepository repository = stubDeliveryRepository(deliveryId, existingDelivery)
         DeliveryService service = new DeliveryService(repository)
 
         when:
@@ -59,5 +52,16 @@ class DeliveryServiceReceiveTest extends Specification {
 
         then:
         did != null // TODO assert repository.save() called
+    }
+
+    private DeliveryRepository stubDeliveryRepository(DeliveryId newDeliveryId, Delivery existingDelivery) {
+        DeliveryRepository repository = Stub()
+        repository.findByOrderNo(orderNo) >> Optional.ofNullable(existingDelivery)
+        repository.save(_ as Delivery) >> createDelivery(newDeliveryId)
+        return repository
+    }
+
+    private static Delivery createDelivery(DeliveryId deliveryId) {
+        return Delivery.builder().id(deliveryId).build();
     }
 }

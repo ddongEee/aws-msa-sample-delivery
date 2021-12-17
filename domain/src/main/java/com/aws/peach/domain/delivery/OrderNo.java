@@ -2,7 +2,7 @@ package com.aws.peach.domain.delivery;
 
 import lombok.EqualsAndHashCode;
 
-@EqualsAndHashCode
+@EqualsAndHashCode(of = "value")
 public class OrderNo {
     public final String value;
 

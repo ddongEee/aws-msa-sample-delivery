@@ -7,7 +7,8 @@ public enum ErrorCode {
 
     // 배송처리 비즈니스 로직 관련
     DELIVERY_DUPLICATE(1200, "delivery.create.duplicate"),
-    DELIVERY_NOT_FOUND(1201, "delivery.notfound"),
+    DELIVERY_NOT_FOUND(1201, "delivery.not.found"),
+    DELIVERY_ILLEGAL_STATE(1202, "delivery.illegal.state"),
 
     UNDEFINED(9999, "server.undefined");
 

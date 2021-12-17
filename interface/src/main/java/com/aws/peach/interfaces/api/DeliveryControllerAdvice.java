@@ -2,6 +2,7 @@ package com.aws.peach.interfaces.api;
 
 import com.aws.peach.domain.delivery.exception.DeliveryAlreadyExistsException;
 import com.aws.peach.domain.delivery.exception.DeliveryNotFoundException;
+import com.aws.peach.domain.delivery.exception.DeliveryStateException;
 import com.aws.peach.interfaces.common.ErrorCode;
 import com.aws.peach.interfaces.common.ValidationException;
 import lombok.extern.slf4j.Slf4j;
@@ -17,20 +18,35 @@ public class DeliveryControllerAdvice {
     @ExceptionHandler(ValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handle(ValidationException e) {
+        log.debug(e.getMessage());
         return new ErrorResponse(ErrorCode.INVALID_REQUEST, e.getMessage());
     }
 
     @ExceptionHandler(DeliveryAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handle(DeliveryAlreadyExistsException e) {
-        final String msg = String.format("duplicate delivery '%s' already exists", e.getDeliveryId());
-        return new ErrorResponse(ErrorCode.DELIVERY_DUPLICATE, msg);
+        log.debug(e.getMessage());
+        return new ErrorResponse(ErrorCode.DELIVERY_DUPLICATE, e.getMessage());
     }
 
     @ExceptionHandler(DeliveryNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handle(DeliveryNotFoundException e) {
-        final String msg = String.format("delivery '%s' not found", e.getOrderNo());
-        return new ErrorResponse(ErrorCode.DELIVERY_NOT_FOUND, msg);
+        log.debug(e.getMessage());
+        return new ErrorResponse(ErrorCode.DELIVERY_NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(DeliveryStateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handle(DeliveryStateException e) {
+        log.debug(e.getMessage());
+        return new ErrorResponse(ErrorCode.DELIVERY_ILLEGAL_STATE, e.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    public ErrorResponse handle(Exception e) {
+        log.error("uncaught exception:", e);
+        return new ErrorResponse(ErrorCode.UNDEFINED, "Please contact administrator");
     }
 }

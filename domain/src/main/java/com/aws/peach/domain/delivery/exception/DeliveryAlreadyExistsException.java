@@ -2,14 +2,16 @@ package com.aws.peach.domain.delivery.exception;
 
 import com.aws.peach.domain.delivery.DeliveryId;
 
-public class DeliveryAlreadyExistsException extends RuntimeException {
-    private final DeliveryId deliveryId;
+public class DeliveryAlreadyExistsException extends DeliveryException {
+    private final String msg;
 
     public DeliveryAlreadyExistsException(DeliveryId deliveryId) {
-        this.deliveryId = deliveryId;
+        super(deliveryId);
+        this.msg = String.format("duplicate delivery '%s' already exists", deliveryId.value);
     }
 
-    public String getDeliveryId() {
-        return deliveryId.value;
+    @Override
+    public String getMessage() {
+        return msg;
     }
 }

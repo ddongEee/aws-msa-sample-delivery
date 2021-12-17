@@ -34,24 +34,24 @@ public class DeliveryService {
         // - 상태 기준으로 배송 이력을 조회할 수 있다
     }
 
-    public DeliveryId prepare(final OrderNo orderNo) {
+    public DeliveryId prepare(final DeliveryId deliveryId) {
         // TODO: DB 저장 및 메세지 발행
-        return updateDeliveryStatus(orderNo, Delivery::prepare);
+        return updateDeliveryStatus(deliveryId, Delivery::prepare);
     }
 
-    public DeliveryId pack(final OrderNo orderNo) {
-        return updateDeliveryStatus(orderNo, Delivery::pack);
+    public DeliveryId pack(final DeliveryId deliveryId) {
+        return updateDeliveryStatus(deliveryId, Delivery::pack);
     }
 
-    public DeliveryId ship(final OrderNo orderNo) {
-        return updateDeliveryStatus(orderNo, Delivery::ship);
+    public DeliveryId ship(final DeliveryId deliveryId) {
+        return updateDeliveryStatus(deliveryId, Delivery::ship);
     }
 
-    private DeliveryId updateDeliveryStatus(final OrderNo orderNo, final Consumer<Delivery> updater) {
-        Optional<Delivery> delivery = repository.findByOrderNo(orderNo);
+    private DeliveryId updateDeliveryStatus(final DeliveryId deliveryId, final Consumer<Delivery> updater) {
+        Optional<Delivery> delivery = repository.findById(deliveryId);
         return delivery.map(delivery1 -> {
                     updater.accept(delivery1);
                     return delivery1.getId();
-                }).orElseThrow(() -> new DeliveryNotFoundException(orderNo));
+                }).orElseThrow(() -> new DeliveryNotFoundException(deliveryId));
     }
 }

@@ -1,6 +1,6 @@
 package com.aws.peach.interfaces.api;
 
-import com.aws.peach.application.Order;
+import com.aws.peach.application.CreateDeliveryInput;
 import com.aws.peach.domain.delivery.OrderNo;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,6 +8,7 @@ import lombok.ToString;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.time.Instant;
 import java.util.List;
 
 @Builder
@@ -26,13 +27,15 @@ public class ReceiveDeliveryOrderRequest {
     @NotNull
     private final ShippingInfo shippingInformation;
 
-    public static Order newOrder(ReceiveDeliveryOrderRequest req) {
-        OrderNo orderNo = new OrderNo(req.orderNo);
-        Order.Orderer orderer = Order.Orderer.builder()
-                    .id(req.orderer.memberId)
-                    .name(req.orderer.name)
-                    .build();
-        Order.Receiver receiver = Order.Receiver.builder()
+    public static CreateDeliveryInput newCreateDeliveryInput(ReceiveDeliveryOrderRequest req) {
+        CreateDeliveryInput.OrderDto order = CreateDeliveryInput.OrderDto.builder()
+                .id(new OrderNo(req.orderNo))
+                .createdAt(Instant.parse(req.orderDate))
+                .ordererId(req.orderer.memberId)
+                .ordererName(req.orderer.name)
+                .build();
+
+        CreateDeliveryInput.Receiver receiver = CreateDeliveryInput.Receiver.builder()
                     .name(req.shippingInformation.receiver)
                     .telephone(req.shippingInformation.telephoneNumber)
                     .city(req.shippingInformation.city)
@@ -40,9 +43,8 @@ public class ReceiveDeliveryOrderRequest {
                     .country(req.shippingInformation.country)
                     .build();
 
-        return Order.builder()
-                .orderNo(orderNo)
-                .orderer(orderer)
+        return CreateDeliveryInput.builder()
+                .order(order)
                 .receiver(receiver)
                 .build();
     }

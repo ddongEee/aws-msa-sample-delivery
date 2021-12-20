@@ -13,13 +13,13 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Delivery {
     private DeliveryId id;
-    private OrderNo orderNo; // monolith 서비스에서 생성한 orderNo
+    private final Order order;
     private Sender sender;
     private Receiver receiver;
     private DeliveryStatus status;
 
-    public Delivery(OrderNo orderNo, Sender sender, Receiver receiver) {
-        this.orderNo = orderNo;
+    public Delivery(Order order, Sender sender, Receiver receiver) {
+        this.order = order; // todo validate (not null)
         this.sender = sender;
         this.receiver = receiver;
         this.status = DeliveryStatus.ORDER_RECEIVED;
@@ -56,7 +56,7 @@ public class Delivery {
     }
 
     public OrderNo getOrderNo() {
-        return orderNo;
+        return this.order.getNo();
     }
 
     @Getter

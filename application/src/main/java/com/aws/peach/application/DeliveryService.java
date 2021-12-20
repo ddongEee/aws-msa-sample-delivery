@@ -18,12 +18,17 @@ public class DeliveryService {
     }
 
     public Delivery createDeliveryOrder(CreateDeliveryInput input) {
-        Delivery delivery = CreateDeliveryInput.newDelivery(input);
+        Delivery delivery = CreateDeliveryInput.newDelivery(input, getSenderAddress());
         Optional<Delivery> existingDelivery = repository.findByOrderNo(delivery.getOrderNo()); // todo delegate check to the save method
         if (existingDelivery.isPresent()) {
             throw new DeliveryAlreadyExistsException(existingDelivery.get().getId());
         }
         return repository.save(delivery);
+    }
+
+    private Address getSenderAddress() {
+        // TODO: 임시
+        return Address.builder().build();
     }
 
     public Delivery prepare(final DeliveryId deliveryId) {

@@ -1,6 +1,7 @@
 package com.aws.peach.interfaces.api;
 
 import com.aws.peach.application.CreateDeliveryInput;
+import com.aws.peach.domain.delivery.Address;
 import com.aws.peach.domain.delivery.OrderNo;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,7 +42,7 @@ public class ReceiveDeliveryOrderRequest {
                 .products(orderProducts)
                 .build();
 
-        CreateDeliveryInput.Receiver receiver = CreateDeliveryInput.Receiver.builder()
+        Address receiver = Address.builder()
                     .name(req.shippingInformation.receiver)
                     .telephone(req.shippingInformation.telephoneNumber)
                     .city(req.shippingInformation.city)

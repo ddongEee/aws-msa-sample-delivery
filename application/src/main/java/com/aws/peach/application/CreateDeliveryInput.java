@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 @Getter
 public class CreateDeliveryInput {
     private OrderDto order;
-    private Receiver receiver;
+    private Address receiver;
 
-    public static Delivery newDelivery(CreateDeliveryInput o) {
+    public static Delivery newDelivery(CreateDeliveryInput o, Address sender) {
         Order.Orderer orderer = Order.Orderer.builder()
                 .id(o.order.ordererId)
                 .name(o.order.ordererName)
@@ -24,21 +24,10 @@ public class CreateDeliveryInput {
                 .openedAt(o.order.createdAt)
                 .orderer(orderer)
                 .build();
-        Delivery.Sender sender = Delivery.Sender.builder() // todo not here
-                .id(o.order.ordererId)
-                .name(o.order.ordererName)
-                .build();
-        Delivery.Receiver receiver = Delivery.Receiver.builder()
-                .name(o.receiver.name)
-                .city(o.receiver.city)
-                .telephone(o.receiver.telephone)
-                .address1(o.receiver.address1)
-                .address2(o.receiver.address2)
-                .build();
         List<Delivery.DeliveryItem> items = o.order.products.stream()
                 .map(OrderProductDto::newDeliveryItem)
                 .collect(Collectors.toList());
-        return new Delivery(order, sender, receiver, items);
+        return new Delivery(order, sender, o.receiver, items);
     }
 
     @Builder
@@ -61,14 +50,5 @@ public class CreateDeliveryInput {
                     .qty(o.qty)
                     .build();
         }
-    }
-
-    @Builder
-    public static class Receiver {
-        private final String name;
-        private final String telephone;
-        private final String city;
-        private final String address1;
-        private final String address2;
     }
 }

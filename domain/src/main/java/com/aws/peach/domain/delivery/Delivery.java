@@ -16,15 +16,15 @@ import java.util.UUID;
 public class Delivery {
     private DeliveryId id;
     private final Order order;
-    private Sender sender;
-    private Receiver receiver;
+    private final Address sender;
+    private final Address receiver;
     private DeliveryStatus status;
     private final DeliveryItems items;
 
-    public Delivery(Order order, Sender sender, Receiver receiver, List<DeliveryItem> items) {
+    public Delivery(Order order, Address sender, Address receiver, List<DeliveryItem> items) {
         this.order = order; // todo validate (not null)
-        this.sender = sender;
-        this.receiver = receiver;
+        this.sender = sender; // todo validate (not null)
+        this.receiver = receiver; // todo validate (not null)
         this.status = new DeliveryStatus(DeliveryStatus.Type.ORDER_RECEIVED);
         this.items = new DeliveryItems(items); // TODO check not null
     }
@@ -64,23 +64,6 @@ public class Delivery {
 
     public OrderNo getOrderNo() {
         return this.order.getNo();
-    }
-
-    @Getter
-    @Builder
-    public static class Sender {
-        private final String id;
-        private final String name;
-    }
-
-    @Getter
-    @Builder
-    public static class Receiver {
-        private final String name;
-        private final String city;
-        private final String telephone;
-        private final String address1;
-        private final String address2;
     }
 
     @Getter

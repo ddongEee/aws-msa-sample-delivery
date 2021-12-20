@@ -1,5 +1,6 @@
 package com.aws.peach.application
 
+import com.aws.peach.domain.delivery.Address
 import com.aws.peach.domain.delivery.Delivery
 import com.aws.peach.domain.delivery.DeliveryId
 import com.aws.peach.domain.delivery.DeliveryRepository
@@ -33,7 +34,7 @@ class DeliveryServiceReceiveTest extends Specification {
                 .ordererName(ordererName)
                 .products(orderProducts)
                 .build()
-        def receiver = CreateDeliveryInput.Receiver.builder()
+        def receiver = Address.builder()
                 .name("Sandy")
                 .telephone("010-1234-1234")
                 .city("Seoul")

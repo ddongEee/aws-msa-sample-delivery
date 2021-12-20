@@ -109,7 +109,7 @@ class DeliveryApiTest extends Specification {
         this.restTemplate.put(url("/delivery/" + deliveryId + "/prepare"), null)
 
         when:
-        def entity = this.restTemplate.exchange(url("/delivery/" + deliveryId + "/pack"), HttpMethod.PUT,
+        def entity = this.restTemplate.exchange(url("/delivery/" + deliveryId + "/package"), HttpMethod.PUT,
                 null, DeliveryDetailResponse.class)
 
         then:
@@ -127,7 +127,7 @@ class DeliveryApiTest extends Specification {
                 DeliveryResponse.class)
         def deliveryId = preEntity.getBody().getDeliveryId()
         this.restTemplate.put(url("/delivery/" + deliveryId + "/prepare"), null)
-        this.restTemplate.put(url("/delivery/" + deliveryId + "/pack"), null)
+        this.restTemplate.put(url("/delivery/" + deliveryId + "/package"), null)
 
         when:
         def entity = this.restTemplate.exchange(url("/delivery/" + deliveryId + "/ship"), HttpMethod.PUT,

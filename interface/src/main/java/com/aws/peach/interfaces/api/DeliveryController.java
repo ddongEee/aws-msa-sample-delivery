@@ -72,9 +72,9 @@ public class DeliveryController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{deliveryId}/pack")
+    @PutMapping("/{deliveryId}/package")
     public ResponseEntity<DeliveryDetailResponse> pack(@PathVariable String deliveryId) {
-        log.info("PUT /delivery/{}/pack", deliveryId);
+        log.info("PUT /delivery/{}/package", deliveryId);
         Delivery delivery = deliveryService.pack(new DeliveryId(deliveryId));
         DeliveryDetailResponse response = DeliveryDetailResponse.of(delivery);
         return ResponseEntity.ok(response);

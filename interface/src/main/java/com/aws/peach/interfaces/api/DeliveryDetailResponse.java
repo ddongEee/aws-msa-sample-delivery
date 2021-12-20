@@ -12,7 +12,8 @@ import java.time.format.DateTimeFormatter;
 @Getter
 public class DeliveryDetailResponse {
     private final String deliveryId;
-    private final String orderNo;
+    private final String orderNo; // TODO order detail
+    // TODO product detail
     private final AddressDto sendingAddress;
     private final AddressDto shippingAddress;
     private final String status;

@@ -2,6 +2,7 @@ package com.aws.peach.infrastructure.dummy
 
 import com.aws.peach.domain.delivery.Delivery
 import com.aws.peach.domain.delivery.DeliveryId
+import com.aws.peach.domain.delivery.Order
 import com.aws.peach.domain.delivery.OrderNo
 import spock.lang.Specification
 
@@ -15,7 +16,8 @@ class DeliveryDummyRepositoryTest extends Specification {
     def setup() {
         orderNo = new OrderNo("o123")
         deliveryId = new DeliveryId("d123")
-        delivery = Delivery.builder().id(deliveryId).orderNo(orderNo).build()
+        Order order = Order.builder().no(orderNo).build()
+        delivery = Delivery.builder().id(deliveryId).order(order).build()
     }
 
     def "should save delivery"() {

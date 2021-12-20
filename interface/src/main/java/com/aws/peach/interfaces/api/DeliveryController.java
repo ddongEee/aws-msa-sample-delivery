@@ -2,7 +2,7 @@ package com.aws.peach.interfaces.api;
 
 import com.aws.peach.application.DeliveryQueryService;
 import com.aws.peach.application.DeliveryService;
-import com.aws.peach.application.Order;
+import com.aws.peach.application.CreateDeliveryInput;
 import com.aws.peach.domain.delivery.Delivery;
 import com.aws.peach.domain.delivery.DeliveryId;
 import com.aws.peach.domain.delivery.OrderNo;
@@ -40,7 +40,8 @@ public class DeliveryController {
         if (bindingResult.hasErrors()) {
             throw new ValidationException(bindingResult);
         }
-        Order order = ReceiveDeliveryOrderRequest.newOrder(request);
+        // TODO get sender information
+        CreateDeliveryInput order = ReceiveDeliveryOrderRequest.newCreateDeliveryInput(request);
         Delivery delivery = deliveryService.createDeliveryOrder(order);
         DeliveryDetailResponse response = DeliveryDetailResponse.of(delivery);
         return ResponseEntity.ok(response);
@@ -72,9 +73,9 @@ public class DeliveryController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{deliveryId}/pack")
+    @PutMapping("/{deliveryId}/package")
     public ResponseEntity<DeliveryDetailResponse> pack(@PathVariable String deliveryId) {
-        log.info("PUT /delivery/{}/pack", deliveryId);
+        log.info("PUT /delivery/{}/package", deliveryId);
         Delivery delivery = deliveryService.pack(new DeliveryId(deliveryId));
         DeliveryDetailResponse response = DeliveryDetailResponse.of(delivery);
         return ResponseEntity.ok(response);

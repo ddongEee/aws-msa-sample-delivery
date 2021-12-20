@@ -78,9 +78,9 @@ public class Delivery {
     public static class Receiver {
         private final String name;
         private final String city;
-        private final String zipCode;
-        private final String country;
         private final String telephone;
+        private final String address1;
+        private final String address2;
     }
 
     @Getter

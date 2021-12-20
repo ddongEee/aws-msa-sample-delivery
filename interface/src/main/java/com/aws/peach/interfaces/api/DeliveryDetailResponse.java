@@ -21,9 +21,9 @@ public class DeliveryDetailResponse {
         Receiver receiver = Receiver.builder()
                 .name(delivery.getReceiver().getName())
                 .city(delivery.getReceiver().getCity())
-                .zipCode(delivery.getReceiver().getZipCode())
-                .country(delivery.getReceiver().getCountry())
                 .telephone(delivery.getReceiver().getTelephone())
+                .address1(delivery.getReceiver().getAddress1())
+                .address2(delivery.getReceiver().getAddress2())
                 .build();
         return DeliveryDetailResponse.builder()
                 .deliveryId(delivery.getId().value)
@@ -46,8 +46,8 @@ public class DeliveryDetailResponse {
     public static class Receiver {
         private final String name;
         private final String city;
-        private final String zipCode;
-        private final String country;
         private final String telephone;
+        private final String address1;
+        private final String address2;
     }
 }

@@ -45,8 +45,8 @@ public class ReceiveDeliveryOrderRequest {
                     .name(req.shippingInformation.receiver)
                     .telephone(req.shippingInformation.telephoneNumber)
                     .city(req.shippingInformation.city)
-                    .zipCode(req.shippingInformation.zipCode)
-                    .country(req.shippingInformation.country)
+                    .address1(req.shippingInformation.address1)
+                    .address2(req.shippingInformation.address2)
                     .build();
 
         return CreateDeliveryInput.builder()
@@ -93,14 +93,13 @@ public class ReceiveDeliveryOrderRequest {
     @Getter
     public static class ShippingInfo {
         @NotNull
-        private final String country;
-        @NotNull
         private final String city;
-        @NotNull
-        private final String zipCode;
         @NotNull
         private final String telephoneNumber;
         @NotNull
         private final String receiver;
+        @NotNull
+        private final String address1;
+        private final String address2;
     }
 }

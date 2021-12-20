@@ -31,9 +31,9 @@ public class CreateDeliveryInput {
         Delivery.Receiver receiver = Delivery.Receiver.builder()
                 .name(o.receiver.name)
                 .city(o.receiver.city)
-                .zipCode(o.receiver.zipCode)
-                .country(o.receiver.country)
                 .telephone(o.receiver.telephone)
+                .address1(o.receiver.address1)
+                .address2(o.receiver.address2)
                 .build();
         List<Delivery.DeliveryItem> items = o.order.products.stream()
                 .map(OrderProductDto::newDeliveryItem)
@@ -65,10 +65,10 @@ public class CreateDeliveryInput {
 
     @Builder
     public static class Receiver {
-        private String name;
-        private String telephone;
-        private String city;
-        private String zipCode;
-        private String country;
+        private final String name;
+        private final String telephone;
+        private final String city;
+        private final String address1;
+        private final String address2;
     }
 }

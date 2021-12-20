@@ -37,8 +37,9 @@ class DeliveryServiceReceiveTest extends Specification {
                 .name("Sandy")
                 .telephone("010-1234-1234")
                 .city("Seoul")
-                .zipCode("12345")
-                .country("South Korea").build()
+                .address1("Teheran-ro 100")
+                .address2("Royal Building 23rd floor")
+                .build()
         createInput = CreateDeliveryInput.builder()
                     .order(orderDto)
                     .receiver(receiver).build()
@@ -72,7 +73,12 @@ class DeliveryServiceReceiveTest extends Specification {
         result.order.openedAt == createInput.order.createdAt
         result.order.orderer.id == createInput.order.ordererId
         result.order.orderer.name == createInput.order.ordererName
-        // TODO test sender, receiver parsing
+        // TODO test sender parsing
+        result.receiver.name == createInput.receiver.name
+        result.receiver.city == createInput.receiver.city
+        result.receiver.telephone == createInput.receiver.telephone
+        result.receiver.address1 == createInput.receiver.address1
+        result.receiver.address2 == createInput.receiver.address2
         result.status.type == DeliveryStatus.Type.ORDER_RECEIVED
         result.items.items.get(0).name == createInput.order.products.get(0).name
         result.items.items.get(0).qty == createInput.order.products.get(0).qty

@@ -30,7 +30,7 @@ class DeliveryServiceReceiveTest extends Specification {
 
     def "if delivery exists, throw error"() {
         given:
-        Delivery existingDelivery = createDelivery(deliveryId)
+        Delivery existingDelivery = createDelivery(deliveryId, orderNo)
         DeliveryRepository repository = stubDeliveryRepository(deliveryId, existingDelivery)
         DeliveryService service = new DeliveryService(repository)
 
@@ -48,20 +48,20 @@ class DeliveryServiceReceiveTest extends Specification {
         DeliveryService service = new DeliveryService(repository)
 
         when:
-        DeliveryId did = service.createDeliveryOrder(order)
+        Delivery result = service.createDeliveryOrder(order)
 
         then:
-        did != null // TODO assert repository.save() called
+        1 * repository.save(_ as Delivery)
     }
 
     private DeliveryRepository stubDeliveryRepository(DeliveryId newDeliveryId, Delivery existingDelivery) {
-        DeliveryRepository repository = Stub()
+        DeliveryRepository repository = Mock()
         repository.findByOrderNo(orderNo) >> Optional.ofNullable(existingDelivery)
-        repository.save(_ as Delivery) >> createDelivery(newDeliveryId)
+        repository.save(_ as Delivery) >> createDelivery(newDeliveryId, orderNo)
         return repository
     }
 
-    private static Delivery createDelivery(DeliveryId deliveryId) {
-        return Delivery.builder().id(deliveryId).build();
+    private static Delivery createDelivery(DeliveryId deliveryId, OrderNo orderNo) {
+        return Delivery.builder().id(deliveryId).orderNo(orderNo).build();
     }
 }

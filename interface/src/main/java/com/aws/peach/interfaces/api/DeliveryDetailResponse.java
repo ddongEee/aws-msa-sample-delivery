@@ -1,4 +1,4 @@
-package com.aws.peach.application;
+package com.aws.peach.interfaces.api;
 
 import com.aws.peach.domain.delivery.Delivery;
 import lombok.Builder;
@@ -6,14 +6,14 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class DeliveryDetail {
+public class DeliveryDetailResponse {
     private String deliveryId;
     private String orderNo;
     private Sender sender;
     private Receiver receiver;
     private String status;
 
-    public static DeliveryDetail of(Delivery delivery) {
+    public static DeliveryDetailResponse of(Delivery delivery) {
         Sender sender = Sender.builder()
                 .id(delivery.getSender().getId())
                 .name(delivery.getSender().getName())
@@ -25,7 +25,7 @@ public class DeliveryDetail {
                 .country(delivery.getReceiver().getCountry())
                 .telephone(delivery.getReceiver().getTelephone())
                 .build();
-        return DeliveryDetail.builder()
+        return DeliveryDetailResponse.builder()
                 .deliveryId(delivery.getId().value)
                 .orderNo(delivery.getOrderNo().value)
                 .sender(sender)

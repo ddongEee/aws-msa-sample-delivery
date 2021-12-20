@@ -52,7 +52,7 @@ class DeliveryServicePackageTest extends Specification {
         DeliveryService service = new DeliveryService(repository)
 
         when:
-        DeliveryId did2 = service.pack(deliveryId)
+        Delivery result = service.pack(deliveryId)
 
         then:
         1 * retrievedDelivery.pack()

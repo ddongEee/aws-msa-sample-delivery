@@ -15,7 +15,7 @@ class DeliveryServiceReceiveTest extends Specification {
 
     // test data
     OrderNo orderNo = new OrderNo("oid")
-    CreateDeliveryInput createInput;
+    CreateDeliveryInput createInput
 
     def setup() {
         Instant orderCreatedAt = Instant.now()
@@ -73,7 +73,7 @@ class DeliveryServiceReceiveTest extends Specification {
         result.order.orderer.id == createInput.order.ordererId
         result.order.orderer.name == createInput.order.ordererName
         // TODO test sender, receiver parsing
-        result.status == DeliveryStatus.ORDER_RECEIVED
+        result.status.type == DeliveryStatus.Type.ORDER_RECEIVED
         result.items.items.get(0).name == createInput.order.products.get(0).name
         result.items.items.get(0).qty == createInput.order.products.get(0).qty
         result.items.items.get(1).name == createInput.order.products.get(1).name
@@ -88,6 +88,6 @@ class DeliveryServiceReceiveTest extends Specification {
     private static Delivery fakeExistingDelivery(OrderNo orderNo) {
         DeliveryId existingDeliveryId = new DeliveryId("123")
         Order order = Order.builder().no(orderNo).build()
-        return Delivery.builder().id(existingDeliveryId).order(order).build();
+        return Delivery.builder().id(existingDeliveryId).order(order).build()
     }
 }

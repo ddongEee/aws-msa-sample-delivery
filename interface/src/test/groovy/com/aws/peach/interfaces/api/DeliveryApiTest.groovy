@@ -15,13 +15,13 @@ import spock.lang.Specification
 class DeliveryApiTest extends Specification {
 
     @LocalServerPort
-    private int port;
+    private int port
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private TestRestTemplate restTemplate
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper
 
     private static int orderNo = 0
 
@@ -41,7 +41,7 @@ class DeliveryApiTest extends Specification {
         entity.getStatusCode() == HttpStatus.OK
         entity.getBody().getDeliveryId() != null
         entity.getBody().getOrderNo() == orderNo
-        entity.getBody().getStatus() == DeliveryStatus.ORDER_RECEIVED.name()
+        entity.getBody().getStatus() == DeliveryStatus.Type.ORDER_RECEIVED.name()
     }
 
     def "should query delivery with delivery_id"() {
@@ -59,7 +59,7 @@ class DeliveryApiTest extends Specification {
         entity.getStatusCode() == HttpStatus.OK
         entity.getBody().getDeliveryId() == deliveryId
         entity.getBody().getOrderNo() == orderNo
-        entity.getBody().getStatus() == DeliveryStatus.ORDER_RECEIVED.name()
+        entity.getBody().getStatus() == DeliveryStatus.Type.ORDER_RECEIVED.name()
     }
 
     def "should query delivery with order_no"() {
@@ -77,7 +77,7 @@ class DeliveryApiTest extends Specification {
         entity.getStatusCode() == HttpStatus.OK
         entity.getBody().getDeliveryId() == deliveryId
         entity.getBody().getOrderNo() == orderNo
-        entity.getBody().getStatus() == DeliveryStatus.ORDER_RECEIVED.name()
+        entity.getBody().getStatus() == DeliveryStatus.Type.ORDER_RECEIVED.name()
     }
 
     def "should prepare delivery"() {
@@ -96,7 +96,7 @@ class DeliveryApiTest extends Specification {
         entity.getStatusCode() == HttpStatus.OK
         entity.getBody().getDeliveryId() == deliveryId
         entity.getBody().getOrderNo() == orderNo
-        entity.getBody().getStatus() == DeliveryStatus.PREPARING.name()
+        entity.getBody().getStatus() == DeliveryStatus.Type.PREPARING.name()
     }
 
     def "should pack delivery"() {
@@ -116,7 +116,7 @@ class DeliveryApiTest extends Specification {
         entity.getStatusCode() == HttpStatus.OK
         entity.getBody().getDeliveryId() == deliveryId
         entity.getBody().getOrderNo() == orderNo
-        entity.getBody().getStatus() == DeliveryStatus.PACKAGING.name()
+        entity.getBody().getStatus() == DeliveryStatus.Type.PACKAGING.name()
     }
 
     def "should ship delivery"() {
@@ -137,7 +137,7 @@ class DeliveryApiTest extends Specification {
         entity.getStatusCode() == HttpStatus.OK
         entity.getBody().getDeliveryId() == deliveryId
         entity.getBody().getOrderNo() == orderNo
-        entity.getBody().getStatus() == DeliveryStatus.SHIPPED.name()
+        entity.getBody().getStatus() == DeliveryStatus.Type.SHIPPED.name()
     }
 
     def url(String suffix) {
@@ -152,14 +152,14 @@ class DeliveryApiTest extends Specification {
         def orderLines = Arrays.asList(
                 createOrderLine("SKU1", "white peach", 5000, 1),
                 createOrderLine("SKU2", "yellow peach", 4000, 1)
-        );
+        )
         def shippingInfo = ReceiveDeliveryOrderRequest.ShippingInfo.builder()
                 .country("South Korea")
                 .city("Seoul")
                 .zipCode("12345")
                 .telephoneNumber("010-1234-1234")
                 .receiver("Benjamin")
-                .build();
+                .build()
         return ReceiveDeliveryOrderRequest.builder()
                 .orderNo(orderNo)
                 .orderer(orderer)
@@ -179,6 +179,6 @@ class DeliveryApiTest extends Specification {
         return ReceiveDeliveryOrderRequest.OrderLine.builder()
                     .orderProduct(product)
                     .quantity(qty)
-                    .build();
+                    .build()
     }
 }

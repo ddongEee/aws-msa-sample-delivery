@@ -33,7 +33,8 @@ class DeliveryServicePackageTest extends Specification {
 
     def "if delivery status not 'PREPARING', abort request"() {
         given:
-        Delivery retrievedDelivery = Delivery.builder().id(deliveryId).status(DeliveryStatus.SHIPPED).build()
+        DeliveryStatus status = new DeliveryStatus(DeliveryStatus.Type.SHIPPED)
+        Delivery retrievedDelivery = Delivery.builder().id(deliveryId).status(status).build()
         DeliveryRepository repository = stubDeliveryRepository(deliveryId, retrievedDelivery)
         DeliveryService service = new DeliveryService(repository)
 
@@ -46,7 +47,7 @@ class DeliveryServicePackageTest extends Specification {
 
     def "upon success, mark delivery order as 'PACKAGING'"() {
         given:
-        Delivery retrievedDelivery = Mock();
+        Delivery retrievedDelivery = Mock()
         retrievedDelivery.getId() >> deliveryId
         DeliveryRepository repository = stubDeliveryRepository(deliveryId, retrievedDelivery)
         DeliveryService service = new DeliveryService(repository)

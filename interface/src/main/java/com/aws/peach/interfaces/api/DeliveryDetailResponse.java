@@ -30,7 +30,7 @@ public class DeliveryDetailResponse {
                 .orderNo(delivery.getOrderNo().value)
                 .sender(sender)
                 .receiver(receiver)
-                .status(delivery.getStatus().name())
+                .status(delivery.getStatus().getType().name())
                 .build();
     }
 

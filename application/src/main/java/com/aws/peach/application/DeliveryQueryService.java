@@ -17,16 +17,12 @@ public class DeliveryQueryService {
         this.repository = repository;
     }
 
-    public Optional<DeliveryDetail> getDelivery(DeliveryId deliveryId) {
-        Optional<Delivery> deliveryOpt = this.repository.findById(deliveryId);
-        return deliveryOpt.map(DeliveryDetail::of)
-                .or(Optional::empty);
+    public Optional<Delivery> getDelivery(DeliveryId deliveryId) {
+        return this.repository.findById(deliveryId);
     }
 
-    public Optional<DeliveryDetail> getDelivery(OrderNo orderNo) {
-        Optional<Delivery> deliveryOpt = this.repository.findByOrderNo(orderNo);
-        return deliveryOpt.map(DeliveryDetail::of)
-                .or(Optional::empty);
+    public Optional<Delivery> getDelivery(OrderNo orderNo) {
+        return this.repository.findByOrderNo(orderNo);
     }
 
 //    public List<DeliveryDetail> getDeliveries() {

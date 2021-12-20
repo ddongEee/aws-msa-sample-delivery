@@ -1,9 +1,9 @@
 package com.aws.peach.interfaces.api;
 
-import com.aws.peach.application.DeliveryDetail;
 import com.aws.peach.application.DeliveryQueryService;
 import com.aws.peach.application.DeliveryService;
 import com.aws.peach.application.Order;
+import com.aws.peach.domain.delivery.Delivery;
 import com.aws.peach.domain.delivery.DeliveryId;
 import com.aws.peach.domain.delivery.OrderNo;
 import com.aws.peach.interfaces.common.JsonException;
@@ -34,32 +34,58 @@ public class DeliveryController {
     }
 
     @PostMapping
-    public ResponseEntity<DeliveryResponse> create(@Valid @RequestBody ReceiveDeliveryOrderRequest request,
+    public ResponseEntity<DeliveryDetailResponse> create(@Valid @RequestBody ReceiveDeliveryOrderRequest request,
                                                    BindingResult bindingResult) {
         log.info("POST /delivery {}", serialize(request));
         if (bindingResult.hasErrors()) {
             throw new ValidationException(bindingResult);
         }
         Order order = ReceiveDeliveryOrderRequest.newOrder(request);
-        DeliveryId id = deliveryService.createDeliveryOrder(order);
-        DeliveryResponse response = DeliveryResponse.builder().deliveryId(id.value).build();
+        Delivery delivery = deliveryService.createDeliveryOrder(order);
+        DeliveryDetailResponse response = DeliveryDetailResponse.of(delivery);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{deliveryId}")
-    public ResponseEntity<DeliveryDetail> queryById(@PathVariable String deliveryId) {
+    public ResponseEntity<DeliveryDetailResponse> queryById(@PathVariable String deliveryId) {
         log.info("GET /delivery/{}", deliveryId);
         return deliveryQueryService.getDelivery(new DeliveryId(deliveryId))
+                    .map(DeliveryDetailResponse::of)
                     .map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.ok().build());
     }
 
     @GetMapping
-    public ResponseEntity<DeliveryDetail> queryByOrderNo(@RequestParam(name = "orderNo") String orderNo) {
+    public ResponseEntity<DeliveryDetailResponse> queryByOrderNo(@RequestParam(name = "orderNo") String orderNo) {
         log.info("GET /delivery?orderNo={}", orderNo);
         return deliveryQueryService.getDelivery(new OrderNo(orderNo))
+                .map(DeliveryDetailResponse::of)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.ok().build());
+    }
+
+    @PutMapping("/{deliveryId}/prepare")
+    public ResponseEntity<DeliveryDetailResponse> prepare(@PathVariable String deliveryId) {
+        log.info("PUT /delivery/{}/prepare", deliveryId);
+        Delivery delivery = deliveryService.prepare(new DeliveryId(deliveryId));
+        DeliveryDetailResponse response = DeliveryDetailResponse.of(delivery);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{deliveryId}/pack")
+    public ResponseEntity<DeliveryDetailResponse> pack(@PathVariable String deliveryId) {
+        log.info("PUT /delivery/{}/pack", deliveryId);
+        Delivery delivery = deliveryService.pack(new DeliveryId(deliveryId));
+        DeliveryDetailResponse response = DeliveryDetailResponse.of(delivery);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{deliveryId}/ship")
+    public ResponseEntity<DeliveryDetailResponse> ship(@PathVariable String deliveryId) {
+        log.info("PUT /delivery/{}/ship", deliveryId);
+        Delivery delivery = deliveryService.ship(new DeliveryId(deliveryId));
+        DeliveryDetailResponse response = DeliveryDetailResponse.of(delivery);
+        return ResponseEntity.ok(response);
     }
 
     private String serialize(ReceiveDeliveryOrderRequest request) {

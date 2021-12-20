@@ -17,34 +17,31 @@ public class DeliveryService {
         this.repository = repository;
     }
 
-    public DeliveryId createDeliveryOrder(Order order) {
+    public Delivery createDeliveryOrder(Order order) {
         Optional<Delivery> existingDelivery = repository.findByOrderNo(order.getOrderNo());
         if (existingDelivery.isPresent()) {
             throw new DeliveryAlreadyExistsException(existingDelivery.get().getId());
         }
         Delivery delivery = Order.newDelivery(order);
-        delivery = repository.save(delivery);
-        return delivery.getId();
+        return repository.save(delivery);
     }
 
-    public DeliveryId prepare(final DeliveryId deliveryId) {
+    public Delivery prepare(final DeliveryId deliveryId) {
         // TODO: DB 저장 및 메세지 발행
         return updateDeliveryStatus(deliveryId, Delivery::prepare);
     }
 
-    public DeliveryId pack(final DeliveryId deliveryId) {
+    public Delivery pack(final DeliveryId deliveryId) {
         return updateDeliveryStatus(deliveryId, Delivery::pack);
     }
 
-    public DeliveryId ship(final DeliveryId deliveryId) {
+    public Delivery ship(final DeliveryId deliveryId) {
         return updateDeliveryStatus(deliveryId, Delivery::ship);
     }
 
-    private DeliveryId updateDeliveryStatus(final DeliveryId deliveryId, final Consumer<Delivery> updater) {
+    private Delivery updateDeliveryStatus(final DeliveryId deliveryId, final Consumer<Delivery> updater) {
         Optional<Delivery> delivery = repository.findById(deliveryId);
-        return delivery.map(delivery1 -> {
-                    updater.accept(delivery1);
-                    return delivery1.getId();
-                }).orElseThrow(() -> new DeliveryNotFoundException(deliveryId));
+        delivery.ifPresent(updater);
+        return delivery.orElseThrow(() -> new DeliveryNotFoundException(deliveryId));
     }
 }

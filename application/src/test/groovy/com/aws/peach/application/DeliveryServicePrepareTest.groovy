@@ -52,7 +52,7 @@ class DeliveryServicePrepareTest extends Specification {
         DeliveryService service = new DeliveryService(repository)
 
         when:
-        DeliveryId did2 = service.prepare(deliveryId)
+        Delivery result = service.prepare(deliveryId)
 
         then:
         1 * retrievedDelivery.prepare()

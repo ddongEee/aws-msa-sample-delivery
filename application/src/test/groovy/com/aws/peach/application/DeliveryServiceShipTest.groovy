@@ -52,7 +52,7 @@ class DeliveryServiceShipTest extends Specification {
         DeliveryService service = new DeliveryService(repository)
 
         when:
-        DeliveryId did2 = service.ship(deliveryId)
+        Delivery result = service.ship(deliveryId)
 
         then:
         1 * retrievedDelivery.ship()

@@ -10,6 +10,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Builder
 @ToString
@@ -28,11 +29,16 @@ public class ReceiveDeliveryOrderRequest {
     private final ShippingInfo shippingInformation;
 
     public static CreateDeliveryInput newCreateDeliveryInput(ReceiveDeliveryOrderRequest req) {
+        List<CreateDeliveryInput.OrderProductDto> orderProducts = req.orderLines.stream()
+                .map(OrderLine::newOrderProductDto)
+                .collect(Collectors.toList());
+
         CreateDeliveryInput.OrderDto order = CreateDeliveryInput.OrderDto.builder()
                 .id(new OrderNo(req.orderNo))
                 .createdAt(Instant.parse(req.orderDate))
                 .ordererId(req.orderer.memberId)
                 .ordererName(req.orderer.name)
+                .products(orderProducts)
                 .build();
 
         CreateDeliveryInput.Receiver receiver = CreateDeliveryInput.Receiver.builder()
@@ -64,6 +70,13 @@ public class ReceiveDeliveryOrderRequest {
         @NotNull
         private final OrderProduct orderProduct;
         private final int quantity;
+
+        public static CreateDeliveryInput.OrderProductDto newOrderProductDto(OrderLine o) {
+            return CreateDeliveryInput.OrderProductDto.builder()
+                    .name(o.orderProduct.productName)
+                    .qty(o.quantity)
+                    .build();
+        }
     }
 
     @Builder

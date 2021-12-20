@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -17,12 +19,15 @@ public class Delivery {
     private Sender sender;
     private Receiver receiver;
     private DeliveryStatus status;
+    private final DeliveryItems items;
+    // TODO 배송시작일자
 
-    public Delivery(Order order, Sender sender, Receiver receiver) {
+    public Delivery(Order order, Sender sender, Receiver receiver, List<DeliveryItem> items) {
         this.order = order; // todo validate (not null)
         this.sender = sender;
         this.receiver = receiver;
         this.status = DeliveryStatus.ORDER_RECEIVED;
+        this.items = new DeliveryItems(items); // TODO check not null
     }
 
     public void prepare() {
@@ -74,5 +79,25 @@ public class Delivery {
         private final String zipCode;
         private final String country;
         private final String telephone;
+    }
+
+    @Getter
+    @Builder
+    public static class DeliveryItem {
+        private final String name;
+        private final int qty;
+    }
+
+    @Getter
+    private static class DeliveryItems {
+        private final List<DeliveryItem> items;
+
+        public DeliveryItems() {
+            this(new ArrayList<>());
+        }
+
+        public DeliveryItems(List<DeliveryItem> items) {
+            this.items = new ArrayList<>(items);
+        }
     }
 }

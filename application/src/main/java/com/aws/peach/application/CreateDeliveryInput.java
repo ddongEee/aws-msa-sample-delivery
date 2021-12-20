@@ -1,12 +1,12 @@
 package com.aws.peach.application;
 
-import com.aws.peach.domain.delivery.Delivery;
-import com.aws.peach.domain.delivery.Order;
-import com.aws.peach.domain.delivery.OrderNo;
+import com.aws.peach.domain.delivery.*;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Builder
 @Getter
@@ -35,7 +35,10 @@ public class CreateDeliveryInput {
                 .country(o.receiver.country)
                 .telephone(o.receiver.telephone)
                 .build();
-        return new Delivery(order, sender, receiver);
+        List<Delivery.DeliveryItem> items = o.order.products.stream()
+                .map(OrderProductDto::newDeliveryItem)
+                .collect(Collectors.toList());
+        return new Delivery(order, sender, receiver, items);
     }
 
     @Builder
@@ -44,7 +47,20 @@ public class CreateDeliveryInput {
         private final Instant createdAt;
         private final String ordererId;
         private final String ordererName;
-        // TODO order products
+        private final List<OrderProductDto> products;
+    }
+
+    @Builder
+    public static class OrderProductDto {
+        private final String name;
+        private final int qty;
+
+        public static Delivery.DeliveryItem newDeliveryItem(OrderProductDto o) {
+            return Delivery.DeliveryItem.builder()
+                    .name(o.name)
+                    .qty(o.qty)
+                    .build();
+        }
     }
 
     @Builder

@@ -62,6 +62,30 @@ public class DeliveryController {
                 .orElseGet(() -> ResponseEntity.ok().build());
     }
 
+    @PutMapping("/{deliveryId}/prepare")
+    public ResponseEntity<DeliveryResponse> prepare(@PathVariable String deliveryId) {
+        log.info("PUT /delivery/{}/prepare", deliveryId);
+        DeliveryId id = deliveryService.prepare(new DeliveryId(deliveryId));
+        DeliveryResponse response = DeliveryResponse.builder().deliveryId(id.value).build();
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{deliveryId}/pack")
+    public ResponseEntity<DeliveryResponse> pack(@PathVariable String deliveryId) {
+        log.info("PUT /delivery/{}/pack", deliveryId);
+        DeliveryId id = deliveryService.pack(new DeliveryId(deliveryId));
+        DeliveryResponse response = DeliveryResponse.builder().deliveryId(id.value).build();
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{deliveryId}/ship")
+    public ResponseEntity<DeliveryResponse> ship(@PathVariable String deliveryId) {
+        log.info("PUT /delivery/{}/ship", deliveryId);
+        DeliveryId id = deliveryService.ship(new DeliveryId(deliveryId));
+        DeliveryResponse response = DeliveryResponse.builder().deliveryId(id.value).build();
+        return ResponseEntity.ok(response);
+    }
+
     private String serialize(ReceiveDeliveryOrderRequest request) {
         try {
             return jsonUtil.serialize(request);

@@ -1,6 +1,7 @@
 package com.aws.peach.interfaces.api
 
 import com.aws.peach.application.DeliveryDetail
+import com.aws.peach.domain.delivery.DeliveryStatus
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -21,9 +22,16 @@ class DeliveryApiTest extends Specification {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private static int orderNo = 0
+
+    private static String generateNewOrderNo() {
+        orderNo += 1
+        return String.valueOf(orderNo)
+    }
+
     def "should create delivery"() {
         when:
-        def orderNo = "1"
+        def orderNo = generateNewOrderNo()
         def entity = this.restTemplate.postForEntity(url("/delivery"),
                 createReceiveDeliveryOrderRequest(orderNo),
                 DeliveryResponse.class)
@@ -35,7 +43,7 @@ class DeliveryApiTest extends Specification {
 
     def "should query delivery with delivery_id"() {
         given:
-        def orderNo = "2"
+        def orderNo = generateNewOrderNo()
         def preEntity = this.restTemplate.postForEntity(url("/delivery"),
                 createReceiveDeliveryOrderRequest(orderNo),
                 DeliveryResponse.class)
@@ -52,7 +60,7 @@ class DeliveryApiTest extends Specification {
 
     def "should query delivery with order_no"() {
         given:
-        def orderNo = "3"
+        def orderNo = generateNewOrderNo()
         def preEntity = this.restTemplate.postForEntity(url("/delivery" ),
                 createReceiveDeliveryOrderRequest(orderNo),
                 DeliveryResponse.class)
@@ -65,6 +73,67 @@ class DeliveryApiTest extends Specification {
         entity.getStatusCode() == HttpStatus.OK
         entity.getBody().getDeliveryId() == deliveryId
         entity.getBody().getOrderNo() == orderNo
+        entity.getBody().getStatus() == DeliveryStatus.ORDER_RECEIVED.name()
+    }
+
+    def "should prepare delivery"() {
+        given:
+        def orderNo = generateNewOrderNo()
+        def preEntity = this.restTemplate.postForEntity(url("/delivery" ),
+                createReceiveDeliveryOrderRequest(orderNo),
+                DeliveryResponse.class)
+        def deliveryId = preEntity.getBody().getDeliveryId()
+
+        when:
+        this.restTemplate.put(url("/delivery/" + deliveryId + "/prepare"), null)
+
+        then:
+        def entity = this.restTemplate.getForEntity(url("/delivery/" + deliveryId), DeliveryDetail.class)
+        entity.getStatusCode() == HttpStatus.OK
+        entity.getBody().getDeliveryId() == deliveryId
+        entity.getBody().getOrderNo() == orderNo
+        entity.getBody().getStatus() == DeliveryStatus.PREPARING.name()
+    }
+
+    def "should pack delivery"() {
+        given:
+        def orderNo = generateNewOrderNo()
+        def preEntity = this.restTemplate.postForEntity(url("/delivery" ),
+                createReceiveDeliveryOrderRequest(orderNo),
+                DeliveryResponse.class)
+        def deliveryId = preEntity.getBody().getDeliveryId()
+        this.restTemplate.put(url("/delivery/" + deliveryId + "/prepare"), null)
+
+        when:
+        this.restTemplate.put(url("/delivery/" + deliveryId + "/pack"), null)
+
+        then:
+        def entity = this.restTemplate.getForEntity(url("/delivery/" + deliveryId), DeliveryDetail.class)
+        entity.getStatusCode() == HttpStatus.OK
+        entity.getBody().getDeliveryId() == deliveryId
+        entity.getBody().getOrderNo() == orderNo
+        entity.getBody().getStatus() == DeliveryStatus.PACKAGING.name()
+    }
+
+    def "should ship delivery"() {
+        given:
+        def orderNo = generateNewOrderNo()
+        def preEntity = this.restTemplate.postForEntity(url("/delivery" ),
+                createReceiveDeliveryOrderRequest(orderNo),
+                DeliveryResponse.class)
+        def deliveryId = preEntity.getBody().getDeliveryId()
+        this.restTemplate.put(url("/delivery/" + deliveryId + "/prepare"), null)
+        this.restTemplate.put(url("/delivery/" + deliveryId + "/pack"), null)
+
+        when:
+        this.restTemplate.put(url("/delivery/" + deliveryId + "/ship"), null)
+
+        then:
+        def entity = this.restTemplate.getForEntity(url("/delivery/" + deliveryId), DeliveryDetail.class)
+        entity.getStatusCode() == HttpStatus.OK
+        entity.getBody().getDeliveryId() == deliveryId
+        entity.getBody().getOrderNo() == orderNo
+        entity.getBody().getStatus() == DeliveryStatus.SHIPPED.name()
     }
 
     def url(String suffix) {

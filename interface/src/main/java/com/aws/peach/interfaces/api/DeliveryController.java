@@ -89,6 +89,14 @@ public class DeliveryController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/{deliveryId}/complete")
+    public ResponseEntity<DeliveryDetailResponse> complete(@PathVariable String deliveryId) {
+        log.info("PUT /delivery/{}/complete", deliveryId);
+        Delivery delivery = deliveryService.complete(new DeliveryId(deliveryId));
+        DeliveryDetailResponse response = DeliveryDetailResponse.of(delivery);
+        return ResponseEntity.ok(response);
+    }
+
     private String serialize(ReceiveDeliveryOrderRequest request) {
         try {
             return jsonUtil.serialize(request);

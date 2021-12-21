@@ -31,9 +31,13 @@ public class DeliveryService {
         return repository.save(delivery);
     }
 
-    private Address getSenderAddress() {
-        // TODO: 임시
-        return Address.builder().build();
+    private Address getSenderAddress() {// TODO: another service
+        return Address.builder()
+                .name("Good Farmer")
+                .telephone("010-1111-2222")
+                .city("Blue Mountain")
+                .address1("Pine Valley 123")
+                .build();
     }
 
     @Transactional(transactionManager = "transactionManager")
@@ -53,6 +57,13 @@ public class DeliveryService {
     @Transactional(transactionManager = "transactionManager")
     public Delivery ship(final DeliveryId deliveryId) {
         Delivery delivery = updateDeliveryStatus(deliveryId, Delivery::ship);
+        publishEvent(delivery);
+        return delivery;
+    }
+
+    @Transactional(transactionManager = "transactionManager")
+    public Delivery complete(final DeliveryId deliveryId) {
+        Delivery delivery = updateDeliveryStatus(deliveryId, Delivery::complete);
         publishEvent(delivery);
         return delivery;
     }

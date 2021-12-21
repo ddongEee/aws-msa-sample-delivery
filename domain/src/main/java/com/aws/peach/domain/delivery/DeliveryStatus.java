@@ -31,7 +31,7 @@ public class DeliveryStatus {
     }
 
     public enum Type {
-        ORDER_RECEIVED, PREPARING, PACKAGING, SHIPPED;
+        ORDER_RECEIVED, PREPARING, PACKAGING, SHIPPED, DELIVERED;
     }
 }
 

@@ -7,7 +7,7 @@ public class DeliveryNotFoundException extends DeliveryException {
 
     public DeliveryNotFoundException(DeliveryId deliveryId) {
         super(deliveryId);
-        this.msg = String.format("delivery '%s' is not found", deliveryId.value);
+        this.msg = String.format("delivery '%s' is not found", deliveryId.getValue());
     }
 
     @Override

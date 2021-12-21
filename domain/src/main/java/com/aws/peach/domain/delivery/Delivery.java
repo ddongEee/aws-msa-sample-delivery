@@ -1,10 +1,7 @@
 package com.aws.peach.domain.delivery;
 
 import com.aws.peach.domain.delivery.exception.DeliveryStateException;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,13 +10,14 @@ import java.util.UUID;
 @Getter
 @Builder(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Delivery {
     private DeliveryId id;
-    private final Order order;
-    private final Address sender;
-    private final Address receiver;
+    private Order order;
+    private Address sender;
+    private Address receiver;
     private DeliveryStatus status;
-    private final DeliveryItems items;
+    private DeliveryItems items;
 
     public Delivery(Order order, Address sender, Address receiver, List<DeliveryItem> items) {
         this.order = order; // todo validate (not null)
@@ -70,7 +68,7 @@ public class Delivery {
     @Builder
     public static class DeliveryItem {
         private final String name;
-        private final int qty;
+        private final int qty; // TODO quantity
     }
 
     @Getter

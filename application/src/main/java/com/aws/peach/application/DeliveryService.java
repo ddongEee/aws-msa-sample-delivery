@@ -3,7 +3,9 @@ package com.aws.peach.application;
 import com.aws.peach.domain.delivery.*;
 import com.aws.peach.domain.delivery.exception.DeliveryAlreadyExistsException;
 import com.aws.peach.domain.delivery.exception.DeliveryNotFoundException;
+import com.aws.peach.domain.support.MessageProducer;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -12,9 +14,12 @@ import java.util.function.Consumer;
 public class DeliveryService {
 
     private final DeliveryRepository repository;
+    private final MessageProducer<String, DeliveryChangeEvent> messageProducer;
 
-    public DeliveryService(DeliveryRepository repository) {
+    public DeliveryService(DeliveryRepository repository,
+                           MessageProducer<String, DeliveryChangeEvent> messageProducer) {
         this.repository = repository;
+        this.messageProducer = messageProducer;
     }
 
     public Delivery createDeliveryOrder(CreateDeliveryInput input) {
@@ -31,22 +36,38 @@ public class DeliveryService {
         return Address.builder().build();
     }
 
+    @Transactional(transactionManager = "transactionManager")
     public Delivery prepare(final DeliveryId deliveryId) {
-        // TODO: DB 저장 및 메세지 발행
-        return updateDeliveryStatus(deliveryId, Delivery::prepare);
+        Delivery delivery = updateDeliveryStatus(deliveryId, Delivery::prepare);
+        publishEvent(delivery);
+        return delivery;
     }
 
+    @Transactional(transactionManager = "transactionManager")
     public Delivery pack(final DeliveryId deliveryId) {
-        return updateDeliveryStatus(deliveryId, Delivery::pack);
+        Delivery delivery = updateDeliveryStatus(deliveryId, Delivery::pack);
+        publishEvent(delivery);
+        return delivery;
     }
 
+    @Transactional(transactionManager = "transactionManager")
     public Delivery ship(final DeliveryId deliveryId) {
-        return updateDeliveryStatus(deliveryId, Delivery::ship);
+        Delivery delivery = updateDeliveryStatus(deliveryId, Delivery::ship);
+        publishEvent(delivery);
+        return delivery;
     }
 
     private Delivery updateDeliveryStatus(final DeliveryId deliveryId, final Consumer<Delivery> updater) {
         Optional<Delivery> delivery = repository.findById(deliveryId);
-        delivery.ifPresent(updater);
+        delivery.ifPresent(delivery1 -> {
+            updater.accept(delivery1);
+            repository.save(delivery1);
+        });
         return delivery.orElseThrow(() -> new DeliveryNotFoundException(deliveryId));
+    }
+
+    private void publishEvent(Delivery delivery) {
+        DeliveryChangeEvent event = DeliveryChangeEvent.of(delivery);
+        messageProducer.send(event.getDeliveryId(), event);
     }
 }

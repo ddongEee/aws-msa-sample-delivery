@@ -1,16 +1,25 @@
 package com.aws.peach.application
 
 import com.aws.peach.domain.delivery.Delivery
+import com.aws.peach.domain.delivery.DeliveryChangeEvent
 import com.aws.peach.domain.delivery.DeliveryId
 import com.aws.peach.domain.delivery.DeliveryRepository
 import com.aws.peach.domain.delivery.DeliveryStatus
+import com.aws.peach.domain.delivery.OrderNo
 import com.aws.peach.domain.delivery.exception.DeliveryNotFoundException
 import com.aws.peach.domain.delivery.exception.DeliveryStateException
+import com.aws.peach.domain.support.MessageProducer
 import spock.lang.Specification
 
 class DeliveryServiceShipTest extends Specification {
 
     DeliveryId deliveryId = new DeliveryId("123")
+    OrderNo orderNo = new OrderNo("o123")
+    MessageProducer<String, DeliveryChangeEvent> messageProducer;
+
+    def setup() {
+        messageProducer = Mock()
+    }
 
     def stubDeliveryRepository(DeliveryId deliveryId, Delivery retrievedDelivery) {
         DeliveryRepository repository = Stub()
@@ -22,7 +31,7 @@ class DeliveryServiceShipTest extends Specification {
         given:
         Delivery retrievedDelivery = null
         DeliveryRepository repository = stubDeliveryRepository(deliveryId, retrievedDelivery)
-        DeliveryService service = new DeliveryService(repository)
+        DeliveryService service = new DeliveryService(repository, messageProducer)
 
         when:
         service.ship(deliveryId)
@@ -36,7 +45,7 @@ class DeliveryServiceShipTest extends Specification {
         DeliveryStatus status = new DeliveryStatus(DeliveryStatus.Type.ORDER_RECEIVED)
         Delivery retrievedDelivery = Delivery.builder().id(deliveryId).status(status).build()
         DeliveryRepository repository = stubDeliveryRepository(deliveryId, retrievedDelivery)
-        DeliveryService service = new DeliveryService(repository)
+        DeliveryService service = new DeliveryService(repository, messageProducer)
 
         when:
         service.ship(deliveryId)
@@ -47,15 +56,22 @@ class DeliveryServiceShipTest extends Specification {
 
     def "upon success, mark delivery order as 'SHIPPED'"() {
         given:
-        Delivery retrievedDelivery = Mock()
-        retrievedDelivery.getId() >> deliveryId
+        Delivery retrievedDelivery = mockRetrievedDelivery(deliveryId, orderNo, DeliveryStatus.Type.PACKAGING)
         DeliveryRepository repository = stubDeliveryRepository(deliveryId, retrievedDelivery)
-        DeliveryService service = new DeliveryService(repository)
+        DeliveryService service = new DeliveryService(repository, messageProducer)
 
         when:
         Delivery result = service.ship(deliveryId)
 
         then:
         1 * retrievedDelivery.ship()
+    }
+
+    Delivery mockRetrievedDelivery(DeliveryId deliveryId, OrderNo orderNo, DeliveryStatus.Type statusType) {
+        Delivery retrievedDelivery = Mock()
+        retrievedDelivery.getId() >> deliveryId
+        retrievedDelivery.getOrderNo() >> orderNo
+        retrievedDelivery.getStatus() >> new DeliveryStatus(statusType)
+        return retrievedDelivery
     }
 }

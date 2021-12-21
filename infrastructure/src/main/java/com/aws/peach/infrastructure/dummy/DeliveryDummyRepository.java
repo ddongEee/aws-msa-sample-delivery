@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Repository
+//@Repository
 public class DeliveryDummyRepository implements DeliveryRepository {
 
     private final Map<OrderNo, Delivery> orderNo2Delivery;

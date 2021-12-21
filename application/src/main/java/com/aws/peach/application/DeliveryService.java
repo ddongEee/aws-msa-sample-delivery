@@ -46,7 +46,10 @@ public class DeliveryService {
 
     private Delivery updateDeliveryStatus(final DeliveryId deliveryId, final Consumer<Delivery> updater) {
         Optional<Delivery> delivery = repository.findById(deliveryId);
-        delivery.ifPresent(updater);
+        delivery.ifPresent(delivery1 -> {
+            updater.accept(delivery1);
+            repository.save(delivery1);
+        });
         return delivery.orElseThrow(() -> new DeliveryNotFoundException(deliveryId));
     }
 }

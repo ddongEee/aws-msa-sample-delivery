@@ -23,8 +23,8 @@ public class DeliveryDetailResponse {
         AddressDto sender = AddressDto.of(delivery.getSender());
         AddressDto receiver = AddressDto.of(delivery.getReceiver());
         return DeliveryDetailResponse.builder()
-                .deliveryId(delivery.getId().value)
-                .orderNo(delivery.getOrderNo().value)
+                .deliveryId(delivery.getId().getValue())
+                .orderNo(delivery.getOrderNo().getValue())
                 .sendingAddress(sender)
                 .shippingAddress(receiver)
                 .status(delivery.getStatus().getType().name())

@@ -7,7 +7,7 @@ public class DeliveryAlreadyExistsException extends DeliveryException {
 
     public DeliveryAlreadyExistsException(DeliveryId deliveryId) {
         super(deliveryId);
-        this.msg = String.format("duplicate delivery '%s' already exists", deliveryId.value);
+        this.msg = String.format("duplicate delivery '%s' already exists", deliveryId.getValue());
     }
 
     @Override

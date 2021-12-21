@@ -18,8 +18,8 @@ public class DeliveryChangeEvent {
 
     public static DeliveryChangeEvent of(Delivery delivery) {
         return DeliveryChangeEvent.builder()
-                .deliveryId(delivery.getId().value)
-                .orderNo(delivery.getOrderNo().value)
+                .deliveryId(delivery.getId().getValue())
+                .orderNo(delivery.getOrderNo().getValue())
                 .sendingAddress(delivery.getSender())
                 .shippingAddress(delivery.getReceiver())
                 .status(delivery.getStatus().getType().name())

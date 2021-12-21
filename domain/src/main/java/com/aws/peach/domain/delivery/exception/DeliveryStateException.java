@@ -7,7 +7,7 @@ public class DeliveryStateException extends DeliveryException {
 
     public DeliveryStateException(DeliveryId deliveryId) {
         super(deliveryId);
-        this.msg = String.format("request is invalid for the delivery's ('%s') current state", deliveryId.value);
+        this.msg = String.format("request is invalid for the delivery's ('%s') current state", deliveryId.getValue());
     }
 
     @Override

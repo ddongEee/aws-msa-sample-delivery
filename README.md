@@ -2,7 +2,7 @@
 event driven microservice
 
 ## delivery backoffice workflow
-
+A Postman collection is available under the `doc` directory.
 1. Request Delivery Order (`POST /delivery`)
 2. Request Delivery Preparing (`PUT /delivery/{deliverId}/prepare`)
    - delivery state change event published

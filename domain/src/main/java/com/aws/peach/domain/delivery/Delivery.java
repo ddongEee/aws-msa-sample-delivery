@@ -51,6 +51,10 @@ public class Delivery {
         }
     }
 
+    public void complete() {
+        this.status = new DeliveryStatus(DeliveryStatus.Type.DELIVERED);
+    }
+
     public DeliveryId getId() {
         return id;
     }

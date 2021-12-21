@@ -1,24 +1,23 @@
-# peach
+# Peach
 event driven microservice
-# 프로젝트 셋팅
-- (임시) application vmOption 에 아래 설정
-    - todo : 환경 구분하기
-    - todo : 다른방식으로 secret 주입
+
+## delivery backoffice workflow
+
+1. Request Delivery Order (`POST /delivery`)
+2. Request Delivery Preparing (`PUT /delivery/{deliverId}/prepare`)
+   - delivery state change event published
+3. Request Delivery Packaging (`PUT /delivery/{deliverId}/package`)
+   - delivery state change event published
+4. Request Delivery Shipping (`PUT /delivery/{deliverId}/ship`)
+   - delivery state change event published
+5. Request Delivery Complete (temporary fix) (`PUT /delivery/{deliverId}/complete`)
+   - delivery state change event published
+
+## kafka local config
 ```
--Dspring.config.location="file:///Users/kmhak/.testprops/application.properties"
+docker-compose -d up
+
+docker-compose exec broker \                                                                                                                                  ✘ INT 1h 36m 23s
+kafka-console-consumer --bootstrap-server localhost:29092 \
+--topic delivery.status.change --from-beginning
 ```
-
-# Setting local Kafka via docker
-
-
-
-# 기타 소소한 project 기본 셋팅
-- Edit custom vm options : todo : (업데이트 하기)
-- Show excluded file 를 "off"
-
-# 적용된 기술 및 개념
-- layered clean architecture
-- java8 ?  
-- spring boot
-- kafka
-- lombok

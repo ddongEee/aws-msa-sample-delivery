@@ -1,5 +1,6 @@
 package com.aws.peach.infrastructure.configuration;
 
+import com.aws.peach.domain.delivery.DeliveryChangeEvent;
 import com.aws.peach.domain.support.MessageConsumer;
 import com.aws.peach.domain.support.MessageProducer;
 import com.aws.peach.infrastructure.kafka.KafkaInfras;
@@ -27,11 +28,11 @@ public class KafkaMessageConfiguration {
     }
 
     /* Producer */
-//    @Bean
-//    public MessageProducer<String, AlbumEventMessage> albumMessageProducer(@Value("${spring.kafka.bootstrap-servers}") final String bootstrapServers,
-//                                                                           @Value("${kafka.topic.album-event}") final String topic) {
-//        return kafkaMessageProducerFactory.create(bootstrapServers, topic);
-//    }
+    @Bean
+    public MessageProducer<String, DeliveryChangeEvent> albumMessageProducer(@Value("${spring.kafka.bootstrap-servers}") final String bootstrapServers,
+                                                                           @Value("${kafka.topic.delivery-event}") final String topic) {
+        return kafkaMessageProducerFactory.create(bootstrapServers, topic);
+    }
 
     /* Consumer */
 //    @Bean

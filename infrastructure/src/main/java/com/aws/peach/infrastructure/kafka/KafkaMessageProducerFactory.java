@@ -4,6 +4,7 @@ import com.aws.peach.domain.support.MessageProducer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
@@ -18,6 +19,12 @@ import java.util.Map;
 @Component
 public class KafkaMessageProducerFactory {
 
+    private final String transactionIdPrefix;
+
+    public KafkaMessageProducerFactory(@Value("${spring.kafka.producer.transaction-id-prefix}") final String transactionIdPrefix) {
+        this.transactionIdPrefix = transactionIdPrefix;
+    }
+
     public <K,V> MessageProducer<K,V> create(final String bootstrapServers,
                                              final String topic) {
 
@@ -25,6 +32,7 @@ public class KafkaMessageProducerFactory {
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        configProps.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, this.transactionIdPrefix);
         ProducerFactory<K, V> producerFactory = new DefaultKafkaProducerFactory<>(configProps);
 
         KafkaTemplate<K, V> kafkaTemplate = new KafkaTemplate<>(producerFactory);

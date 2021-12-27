@@ -65,6 +65,7 @@ class DeliveryServiceShipTest extends Specification {
 
         then:
         1 * retrievedDelivery.ship()
+        1 * messageProducer.send(deliveryId.value, _ as DeliveryChangeEvent)
     }
 
     Delivery mockRetrievedDelivery(DeliveryId deliveryId, OrderNo orderNo, DeliveryStatus.Type statusType) {

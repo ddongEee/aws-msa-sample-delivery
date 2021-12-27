@@ -1,8 +1,8 @@
 package com.aws.peach.interfaces.api;
 
 import com.aws.peach.configuration.PeachApiContextConfig;
-import com.aws.peach.infrastructure.configuration.DummyConfiguration;
-import com.aws.peach.infrastructure.configuration.KafkaMessageConfiguration;
+import com.aws.peach.infrastructure.configuration.api.PeachApiInfrastructureContextConfig;
+import com.aws.peach.interfaces.message.MessageConsumerConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
@@ -11,8 +11,8 @@ import org.springframework.context.annotation.Import;
 @SpringBootApplication
 @Import(value = {
 		PeachApiContextConfig.class,
-		KafkaMessageConfiguration.class,
-		DummyConfiguration.class
+		PeachApiInfrastructureContextConfig.class,
+		MessageConsumerConfiguration.class
 })
 public class PeachApiApplication {
 	public static void main(String[] args) {

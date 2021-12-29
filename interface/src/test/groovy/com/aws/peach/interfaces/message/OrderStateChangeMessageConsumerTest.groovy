@@ -2,6 +2,7 @@ package com.aws.peach.interfaces.message
 
 import com.aws.peach.application.CreateDeliveryInput
 import com.aws.peach.application.DeliveryService
+import com.aws.peach.domain.order.OrderStateChangeMessage
 import spock.lang.Specification
 
 class OrderStateChangeMessageConsumerTest extends Specification {

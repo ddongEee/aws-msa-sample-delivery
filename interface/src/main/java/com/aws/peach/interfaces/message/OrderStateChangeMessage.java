@@ -37,7 +37,7 @@ public class OrderStateChangeMessage {
         return date.atStartOfDay(ZoneId.of("Asia/Seoul")).toInstant();
     }
 
-    private enum State {
+    enum State {
         PAID, UNKNOWN;
     }
 
@@ -61,8 +61,8 @@ public class OrderStateChangeMessage {
 
     @Getter
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    private static class OrderLineDto {
+    @AllArgsConstructor(access = AccessLevel.PACKAGE)
+    static class OrderLineDto {
         private OrderProductDto orderProduct;
         private int quantity;
 
@@ -76,8 +76,8 @@ public class OrderStateChangeMessage {
 
     @Getter
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    private static class OrderProductDto {
+    @AllArgsConstructor(access = AccessLevel.PACKAGE)
+    static class OrderProductDto {
         private String productId;
         private String productName;
         private int price;
@@ -87,7 +87,7 @@ public class OrderStateChangeMessage {
     @Builder
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    private static class ShippingInformationDto {
+    static class ShippingInformationDto {
         private String city;
         private String telephoneNumber;
         private String receiver;

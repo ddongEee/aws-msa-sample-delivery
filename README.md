@@ -20,4 +20,8 @@ docker-compose -d up
 docker-compose exec broker \                                                                                                                                  ✘ INT 1h 36m 23s
 kafka-console-consumer --bootstrap-server localhost:29092 \
 --topic delivery.status.change --from-beginning
+
+docker-compose exec broker \                                                                                                                                  ✘ INT 1h 36m 23s
+kafka-console-consumer --bootstrap-server localhost:29092 \
+--topic order_state_change --from-beginning
 ```

@@ -2,10 +2,12 @@ package com.aws.peach.domain.delivery;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
+@ToString
 @Builder
 @Getter
 public class DeliveryChangeEvent {

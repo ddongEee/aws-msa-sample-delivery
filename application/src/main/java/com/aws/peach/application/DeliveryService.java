@@ -16,8 +16,8 @@ public class DeliveryService {
     private final DeliveryRepository repository;
     private final MessageProducer<String, DeliveryChangeEvent> messageProducer;
 
-    public DeliveryService(DeliveryRepository repository,
-                           MessageProducer<String, DeliveryChangeEvent> messageProducer) {
+    public DeliveryService(final DeliveryRepository repository,
+                           final MessageProducer<String, DeliveryChangeEvent> messageProducer) {
         this.repository = repository;
         this.messageProducer = messageProducer;
     }

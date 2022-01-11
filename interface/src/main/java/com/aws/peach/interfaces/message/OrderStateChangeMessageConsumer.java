@@ -22,6 +22,7 @@ public class OrderStateChangeMessageConsumer implements MessageConsumer<OrderSta
 
     @Override
     public void consume(OrderStateChangeMessage value) {
+        // todo message validation
         if (value.isPaidStatus()) {
             CreateDeliveryInput input = OrderStateChangeMessageConsumer.Mapper.newCreateDeliveryInput(value);
             this.deliveryService.createDeliveryOrder(input);

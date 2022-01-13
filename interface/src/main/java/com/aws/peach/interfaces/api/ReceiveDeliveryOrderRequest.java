@@ -75,7 +75,7 @@ public class ReceiveDeliveryOrderRequest {
         public static CreateDeliveryInput.OrderProductDto newOrderProductDto(OrderLine o) {
             return CreateDeliveryInput.OrderProductDto.builder()
                     .name(o.orderProduct.productName)
-                    .qty(o.quantity)
+                    .quantity(o.quantity)
                     .build();
         }
     }

@@ -72,7 +72,7 @@ public class Delivery {
     @Builder
     public static class DeliveryItem {
         private final String name;
-        private final int qty; // TODO quantity
+        private final int quantity;
     }
 
     @Getter

@@ -42,12 +42,12 @@ public class CreateDeliveryInput {
     @Builder
     public static class OrderProductDto {
         private final String name;
-        private final int qty;
+        private final int quantity;
 
         public static Delivery.DeliveryItem newDeliveryItem(OrderProductDto o) {
             return Delivery.DeliveryItem.builder()
                     .name(o.name)
-                    .qty(o.qty)
+                    .quantity(o.quantity)
                     .build();
         }
     }

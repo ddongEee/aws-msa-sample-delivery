@@ -1,14 +1,11 @@
-package com.aws.peach.interfaces.api;
+package com.aws.peach.interfaces.api.dto;
 
 import com.aws.peach.domain.delivery.Address;
 import com.aws.peach.domain.delivery.Delivery;
-import com.aws.peach.domain.delivery.Order;
-import lombok.AllArgsConstructor;
+import com.aws.peach.interfaces.support.DtoUtil;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Builder
@@ -34,41 +31,8 @@ public class DeliveryDetailResponse {
                 .sendingAddress(sender)
                 .shippingAddress(receiver)
                 .status(delivery.getStatus().getType().name())
-                .updatedAt(formatTimestamp(delivery.getStatus().getTimestamp()))
+                .updatedAt(DtoUtil.formatTimestamp(delivery.getStatus().getTimestamp()))
                 .build();
-    }
-
-    private static String formatTimestamp(Instant timestamp) {
-        return DateTimeFormatter.ISO_INSTANT.format(timestamp);
-    }
-
-    @Builder
-    @Getter
-    public static class OrderDto {
-        private final String orderNo;
-        private final String openedAt;
-        private final String ordererId;
-        private final String ordererName;
-
-        public static OrderDto of(Order o) {
-            return OrderDto.builder()
-                    .orderNo(o.getNo().getValue())
-                    .openedAt(formatTimestamp(o.getOpenedAt()))
-                    .ordererId(o.getOrderer().getId())
-                    .ordererName(o.getOrderer().getName())
-                    .build();
-        }
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public static class DeliveryItemDto {
-        private final String name;
-        private final int quantity;
-
-        public static DeliveryItemDto of(Delivery.DeliveryItem o) {
-            return new DeliveryItemDto(o.getName(), o.getQuantity());
-        }
     }
 
     @Builder

@@ -1,4 +1,4 @@
-package com.aws.peach.interfaces.api;
+package com.aws.peach.interfaces.api.dto;
 
 import com.aws.peach.interfaces.common.ErrorCode;
 import lombok.Getter;

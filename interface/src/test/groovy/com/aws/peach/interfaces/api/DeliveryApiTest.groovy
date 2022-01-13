@@ -39,7 +39,7 @@ class DeliveryApiTest extends Specification {
         then:
         entity.getStatusCode() == HttpStatus.OK
         entity.getBody().getDeliveryId() != null
-        entity.getBody().getOrderNo() == orderNo
+        entity.getBody().getOrder().getOrderNo() == orderNo
         entity.getBody().getStatus() == DeliveryStatus.Type.ORDER_RECEIVED.name()
     }
 
@@ -57,7 +57,7 @@ class DeliveryApiTest extends Specification {
         then:
         entity.getStatusCode() == HttpStatus.OK
         entity.getBody().getDeliveryId() == deliveryId
-        entity.getBody().getOrderNo() == orderNo
+        entity.getBody().getOrder().getOrderNo() == orderNo
         entity.getBody().getStatus() == DeliveryStatus.Type.ORDER_RECEIVED.name()
     }
 
@@ -75,7 +75,7 @@ class DeliveryApiTest extends Specification {
         then:
         entity.getStatusCode() == HttpStatus.OK
         entity.getBody().getDeliveryId() == deliveryId
-        entity.getBody().getOrderNo() == orderNo
+        entity.getBody().getOrder().getOrderNo() == orderNo
         entity.getBody().getStatus() == DeliveryStatus.Type.ORDER_RECEIVED.name()
     }
 
@@ -94,7 +94,7 @@ class DeliveryApiTest extends Specification {
         then:
         entity.getStatusCode() == HttpStatus.OK
         entity.getBody().getDeliveryId() == deliveryId
-        entity.getBody().getOrderNo() == orderNo
+        entity.getBody().getOrder().getOrderNo() == orderNo
         entity.getBody().getStatus() == DeliveryStatus.Type.PREPARING.name()
     }
 
@@ -114,7 +114,7 @@ class DeliveryApiTest extends Specification {
         then:
         entity.getStatusCode() == HttpStatus.OK
         entity.getBody().getDeliveryId() == deliveryId
-        entity.getBody().getOrderNo() == orderNo
+        entity.getBody().getOrder().getOrderNo() == orderNo
         entity.getBody().getStatus() == DeliveryStatus.Type.PACKAGING.name()
     }
 
@@ -135,7 +135,7 @@ class DeliveryApiTest extends Specification {
         then:
         entity.getStatusCode() == HttpStatus.OK
         entity.getBody().getDeliveryId() == deliveryId
-        entity.getBody().getOrderNo() == orderNo
+        entity.getBody().getOrder().getOrderNo() == orderNo
         entity.getBody().getStatus() == DeliveryStatus.Type.SHIPPED.name()
     }
 

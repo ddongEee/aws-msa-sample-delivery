@@ -2,6 +2,7 @@ package com.aws.peach.interfaces.api;
 
 import com.aws.peach.domain.delivery.Address;
 import com.aws.peach.domain.delivery.Delivery;
+import com.aws.peach.domain.delivery.Order;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 @Getter
 public class DeliveryDetailResponse {
     private final String deliveryId;
-    private final String orderNo; // TODO order detail
+    private final OrderDto order;
     // TODO product detail
     private final AddressDto sendingAddress;
     private final AddressDto shippingAddress;
@@ -24,7 +25,7 @@ public class DeliveryDetailResponse {
         AddressDto receiver = AddressDto.of(delivery.getReceiver());
         return DeliveryDetailResponse.builder()
                 .deliveryId(delivery.getId().getValue())
-                .orderNo(delivery.getOrderNo().getValue())
+                .order(OrderDto.of(delivery.getOrder()))
                 .sendingAddress(sender)
                 .shippingAddress(receiver)
                 .status(delivery.getStatus().getType().name())
@@ -34,6 +35,24 @@ public class DeliveryDetailResponse {
 
     private static String formatTimestamp(Instant timestamp) {
         return DateTimeFormatter.ISO_INSTANT.format(timestamp);
+    }
+
+    @Builder
+    @Getter
+    public static class OrderDto {
+        private final String orderNo;
+        private final String openedAt;
+        private final String ordererId;
+        private final String ordererName;
+
+        public static OrderDto of(Order o) {
+            return OrderDto.builder()
+                    .orderNo(o.getNo().getValue())
+                    .openedAt(formatTimestamp(o.getOpenedAt()))
+                    .ordererId(o.getOrderer().getId())
+                    .ordererName(o.getOrderer().getName())
+                    .build();
+        }
     }
 
     @Builder

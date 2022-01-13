@@ -32,14 +32,20 @@ class DeliveryApiTest extends Specification {
     def "should create delivery"() {
         when:
         def orderNo = generateNewOrderNo()
+        def request = createReceiveDeliveryOrderRequest(orderNo)
         def entity = this.restTemplate.postForEntity(url("/delivery"),
-                createReceiveDeliveryOrderRequest(orderNo),
-                DeliveryDetailResponse.class)
+                request, DeliveryDetailResponse.class)
 
         then:
         entity.getStatusCode() == HttpStatus.OK
         entity.getBody().getDeliveryId() != null
         entity.getBody().getOrder().getOrderNo() == orderNo
+        entity.getBody().getOrder().getOrdererId() == request.getOrderer().getMemberId()
+        entity.getBody().getOrder().getOrdererName() == request.getOrderer().getName()
+        entity.getBody().getOrder().getOpenedAt() == request.getOrderDate()
+        entity.getBody().getItems().size() == request.getOrderLines().size()
+        entity.getBody().getShippingAddress().getName() == request.getShippingInformation().getReceiver()
+        entity.getBody().getShippingAddress().getTelephone() == request.getShippingInformation().getTelephoneNumber()
         entity.getBody().getStatus() == DeliveryStatus.Type.ORDER_RECEIVED.name()
     }
 

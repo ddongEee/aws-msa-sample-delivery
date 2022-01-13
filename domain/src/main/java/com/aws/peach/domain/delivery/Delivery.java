@@ -6,6 +6,8 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder(access = AccessLevel.PACKAGE)
@@ -75,8 +77,7 @@ public class Delivery {
         private final int quantity;
     }
 
-    @Getter
-    private static class DeliveryItems {
+    public static class DeliveryItems {
         private final List<DeliveryItem> items;
 
         public DeliveryItems() {
@@ -85,6 +86,16 @@ public class Delivery {
 
         public DeliveryItems(List<DeliveryItem> items) {
             this.items = new ArrayList<>(items);
+        }
+
+        public List<DeliveryItem> getItems() {
+            return new ArrayList<>(items);
+        }
+
+        public <T> List<T> getMappedList(Function<DeliveryItem, ? extends T> mapper) {
+            return this.items.stream()
+                    .map(mapper)
+                    .collect(Collectors.toList());
         }
     }
 }

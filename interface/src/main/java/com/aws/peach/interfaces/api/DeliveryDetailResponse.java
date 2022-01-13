@@ -3,29 +3,34 @@ package com.aws.peach.interfaces.api;
 import com.aws.peach.domain.delivery.Address;
 import com.aws.peach.domain.delivery.Delivery;
 import com.aws.peach.domain.delivery.Order;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Builder
 @Getter
 public class DeliveryDetailResponse {
     private final String deliveryId;
     private final OrderDto order;
-    // TODO product detail
+    private final List<DeliveryItemDto> items;
     private final AddressDto sendingAddress;
     private final AddressDto shippingAddress;
     private final String status;
     private final String updatedAt;
 
     public static DeliveryDetailResponse of(Delivery delivery) {
+        OrderDto order = OrderDto.of(delivery.getOrder());
+        List<DeliveryItemDto> items = delivery.getItems().getMappedList(DeliveryItemDto::of);
         AddressDto sender = AddressDto.of(delivery.getSender());
         AddressDto receiver = AddressDto.of(delivery.getReceiver());
         return DeliveryDetailResponse.builder()
                 .deliveryId(delivery.getId().getValue())
-                .order(OrderDto.of(delivery.getOrder()))
+                .order(order)
+                .items(items)
                 .sendingAddress(sender)
                 .shippingAddress(receiver)
                 .status(delivery.getStatus().getType().name())
@@ -52,6 +57,17 @@ public class DeliveryDetailResponse {
                     .ordererId(o.getOrderer().getId())
                     .ordererName(o.getOrderer().getName())
                     .build();
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class DeliveryItemDto {
+        private final String name;
+        private final int quantity;
+
+        public static DeliveryItemDto of(Delivery.DeliveryItem o) {
+            return new DeliveryItemDto(o.getName(), o.getQuantity());
         }
     }
 

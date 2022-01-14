@@ -3,7 +3,7 @@ package com.aws.peach.interfaces.api;
 import com.aws.peach.application.DeliveryQueryService;
 import com.aws.peach.domain.delivery.DeliveryId;
 import com.aws.peach.domain.delivery.OrderNo;
-import com.aws.peach.interfaces.api.dto.DeliveryDetailResponse;
+import com.aws.peach.interfaces.api.model.DeliveryDetailResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

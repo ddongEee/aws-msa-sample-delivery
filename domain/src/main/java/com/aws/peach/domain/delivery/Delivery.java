@@ -1,6 +1,7 @@
 package com.aws.peach.domain.delivery;
 
 import com.aws.peach.domain.delivery.exception.DeliveryStateException;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -66,6 +67,7 @@ public class Delivery {
         this.id = new DeliveryId(uuid.toString());
     }
 
+    @JsonIgnore
     public OrderNo getOrderNo() {
         return this.order.getNo();
     }

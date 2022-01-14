@@ -1,4 +1,4 @@
-package com.aws.peach.interfaces.api.dto;
+package com.aws.peach.interfaces.api.model;
 
 import com.aws.peach.application.CreateDeliveryInput;
 import com.aws.peach.domain.delivery.Address;

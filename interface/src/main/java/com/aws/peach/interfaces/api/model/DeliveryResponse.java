@@ -2,19 +2,19 @@ package com.aws.peach.interfaces.api.model;
 
 import com.aws.peach.domain.delivery.Delivery;
 import com.aws.peach.interfaces.support.DtoUtil;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 public abstract class DeliveryResponse {
 
-    @Builder
     @Getter
+    @Builder(access = AccessLevel.PRIVATE)
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     protected static class Order {
-        private final String orderNo;
-        private final String openedAt;
-        private final String ordererId;
-        private final String ordererName;
+        private String orderNo;
+        private String openedAt;
+        private String ordererId;
+        private String ordererName;
 
         public static Order of(com.aws.peach.domain.delivery.Order o) {
             return Order.builder()
@@ -27,10 +27,11 @@ public abstract class DeliveryResponse {
     }
 
     @Getter
-    @AllArgsConstructor
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     protected static class DeliveryProduct {
-        private final String name;
-        private final int quantity;
+        private String name;
+        private int quantity;
 
         public static DeliveryProduct of(Delivery.DeliveryItem o) {
             return new DeliveryProduct(o.getName(), o.getQuantity());

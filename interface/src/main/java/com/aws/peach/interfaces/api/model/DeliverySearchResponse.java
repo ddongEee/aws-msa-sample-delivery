@@ -1,33 +1,33 @@
 package com.aws.peach.interfaces.api.model;
 
+import com.aws.peach.application.DeliveryQueryService;
 import com.aws.peach.interfaces.support.DtoUtil;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-@Builder
 @Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class DeliverySearchResponse extends DeliveryResponse {
     private List<Search> searchResult;
 
-    public static DeliverySearchResponse of(List<com.aws.peach.domain.delivery.Delivery> result) {
-        List<Search> parsedResult = Objects.requireNonNull(result).stream()
-                .map(Search::of)
-                .collect(Collectors.toList());
-        return new DeliverySearchResponse(parsedResult);
+    public static DeliverySearchResponse of(DeliveryQueryService.SearchResult result) {
+        List<Search> parsedResultList = Objects.requireNonNull(result).getMappedResultList(Search::of);
+        return new DeliverySearchResponse(parsedResultList);
     }
 
-    @Builder
     @Getter
+    @Builder(access = AccessLevel.PRIVATE)
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Search {
-        private final String deliveryId;
-        private final Order order;
-        private final List<DeliveryProduct> items;
-        private final String status;
-        private final String updatedAt;
+        private String deliveryId;
+        private Order order;
+        private List<DeliveryProduct> items;
+        private String status;
+        private String updatedAt;
 
         public static Search of(com.aws.peach.domain.delivery.Delivery delivery) {
             Order order = Order.of(delivery.getOrder());

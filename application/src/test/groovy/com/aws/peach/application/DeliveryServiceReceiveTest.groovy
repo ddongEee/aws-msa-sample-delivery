@@ -28,8 +28,8 @@ class DeliveryServiceReceiveTest extends Specification {
         String ordererId = "1"
         String ordererName = "PeachMan"
         List<CreateDeliveryInput.OrderProductDto> orderProducts = Arrays.asList(
-                CreateDeliveryInput.OrderProductDto.builder().name("YP").qty(1).build(),
-                CreateDeliveryInput.OrderProductDto.builder().name("WP").qty(2).build()
+                CreateDeliveryInput.OrderProductDto.builder().name("YP").quantity(1).build(),
+                CreateDeliveryInput.OrderProductDto.builder().name("WP").quantity(2).build()
         )
 
         def orderDto = CreateDeliveryInput.OrderDto.builder()
@@ -87,9 +87,9 @@ class DeliveryServiceReceiveTest extends Specification {
         result.receiver.address2 == createInput.receiver.address2
         result.status.type == DeliveryStatus.Type.ORDER_RECEIVED
         result.items.items.get(0).name == createInput.order.products.get(0).name
-        result.items.items.get(0).qty == createInput.order.products.get(0).qty
+        result.items.items.get(0).quantity == createInput.order.products.get(0).quantity
         result.items.items.get(1).name == createInput.order.products.get(1).name
-        result.items.items.get(1).qty == createInput.order.products.get(1).qty
+        result.items.items.get(1).quantity == createInput.order.products.get(1).quantity
     }
 
     private static DeliveryRepository createTestRepository(Delivery existingDelivery) {

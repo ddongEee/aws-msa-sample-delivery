@@ -1,11 +1,11 @@
 package com.aws.peach.interfaces.api;
 
-import com.aws.peach.application.DeliveryQueryService;
 import com.aws.peach.application.DeliveryService;
 import com.aws.peach.application.CreateDeliveryInput;
 import com.aws.peach.domain.delivery.Delivery;
 import com.aws.peach.domain.delivery.DeliveryId;
-import com.aws.peach.domain.delivery.OrderNo;
+import com.aws.peach.interfaces.api.model.DeliveryDetailResponse;
+import com.aws.peach.interfaces.api.model.ReceiveDeliveryOrderRequest;
 import com.aws.peach.interfaces.common.JsonException;
 import com.aws.peach.interfaces.common.JsonUtil;
 import com.aws.peach.interfaces.common.ValidationException;
@@ -22,20 +22,16 @@ import javax.validation.Valid;
 public class DeliveryController {
 
     private final DeliveryService deliveryService;
-    private final DeliveryQueryService deliveryQueryService;
     private final JsonUtil jsonUtil;
 
-    public DeliveryController(DeliveryService deliveryService,
-                              DeliveryQueryService deliveryQueryService,
-                              JsonUtil jsonUtil) {
+    public DeliveryController(DeliveryService deliveryService, JsonUtil jsonUtil) {
         this.deliveryService = deliveryService;
-        this.deliveryQueryService = deliveryQueryService;
         this.jsonUtil = jsonUtil;
     }
 
     @PostMapping
     public ResponseEntity<DeliveryDetailResponse> create(@Valid @RequestBody ReceiveDeliveryOrderRequest request,
-                                                   BindingResult bindingResult) {
+                                                         BindingResult bindingResult) {
         log.info("POST /delivery {}", serialize(request));
         if (bindingResult.hasErrors()) {
             throw new ValidationException(bindingResult);
@@ -45,24 +41,6 @@ public class DeliveryController {
         Delivery delivery = deliveryService.createDeliveryOrder(order);
         DeliveryDetailResponse response = DeliveryDetailResponse.of(delivery);
         return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/{deliveryId}")
-    public ResponseEntity<DeliveryDetailResponse> queryById(@PathVariable String deliveryId) {
-        log.info("GET /delivery/{}", deliveryId);
-        return deliveryQueryService.getDelivery(new DeliveryId(deliveryId))
-                    .map(DeliveryDetailResponse::of)
-                    .map(ResponseEntity::ok)
-                    .orElseGet(() -> ResponseEntity.ok().build());
-    }
-
-    @GetMapping
-    public ResponseEntity<DeliveryDetailResponse> queryByOrderNo(@RequestParam(name = "orderNo") String orderNo) {
-        log.info("GET /delivery?orderNo={}", orderNo);
-        return deliveryQueryService.getDelivery(new OrderNo(orderNo))
-                .map(DeliveryDetailResponse::of)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.ok().build());
     }
 
     @PutMapping("/{deliveryId}/prepare")

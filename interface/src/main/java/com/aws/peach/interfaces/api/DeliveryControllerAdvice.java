@@ -3,6 +3,7 @@ package com.aws.peach.interfaces.api;
 import com.aws.peach.domain.delivery.exception.DeliveryAlreadyExistsException;
 import com.aws.peach.domain.delivery.exception.DeliveryNotFoundException;
 import com.aws.peach.domain.delivery.exception.DeliveryStateException;
+import com.aws.peach.interfaces.api.model.ErrorResponse;
 import com.aws.peach.interfaces.common.ErrorCode;
 import com.aws.peach.interfaces.common.ValidationException;
 import lombok.extern.slf4j.Slf4j;

@@ -1,19 +1,12 @@
 package com.aws.peach.application;
 
-import com.aws.peach.domain.delivery.Delivery;
-import com.aws.peach.domain.delivery.DeliveryId;
-import com.aws.peach.domain.delivery.DeliveryRepository;
-import com.aws.peach.domain.delivery.OrderNo;
-import org.springframework.stereotype.Repository;
+import com.aws.peach.domain.delivery.*;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Repository
 public class DeliveryTestRepository implements DeliveryRepository {
 
     private final Map<OrderNo, Delivery> orderNo2Delivery;
@@ -47,5 +40,28 @@ public class DeliveryTestRepository implements DeliveryRepository {
         orderNo2Delivery.put(delivery.getOrderNo(), delivery);
         deliveryId2Delivery.put(delivery.getId(), delivery);
         return delivery;
+    }
+
+    @Override
+    public List<Delivery> findAll(int pageNo, int pageSize) {
+        List<Delivery> all = new ArrayList<>(orderNo2Delivery.values());
+        return DeliveryTestRepository.createSubList(all, pageNo, pageSize);
+    }
+
+    @Override
+    public List<Delivery> findAllByStatus(DeliveryStatus.Type type, int pageNo, int pageSize) {
+        List<Delivery> filtered = orderNo2Delivery.values().stream()
+                .filter(d -> d.getStatus().getType().equals(type))
+                .collect(Collectors.toList());
+        return DeliveryTestRepository.createSubList(filtered, pageNo, pageSize);
+    }
+
+    private static List<Delivery> createSubList(List<Delivery> originalList, int pageNo, int pageSize) {
+        if (originalList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        final int from = Math.max(pageNo * pageSize, 0);
+        final int to = Math.min(from + pageSize, originalList.size());
+        return originalList.subList(from, to);
     }
 }

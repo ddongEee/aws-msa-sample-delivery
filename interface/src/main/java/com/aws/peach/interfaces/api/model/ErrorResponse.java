@@ -1,4 +1,4 @@
-package com.aws.peach.interfaces.api;
+package com.aws.peach.interfaces.api.model;
 
 import com.aws.peach.interfaces.common.ErrorCode;
 import lombok.Getter;

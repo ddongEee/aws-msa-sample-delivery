@@ -1,19 +1,19 @@
 package com.aws.peach.infrastructure.dummy;
 
-import com.aws.peach.domain.delivery.Delivery;
-import com.aws.peach.domain.delivery.DeliveryId;
-import com.aws.peach.domain.delivery.DeliveryRepository;
-import com.aws.peach.domain.delivery.OrderNo;
+import com.aws.peach.domain.delivery.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.domain.*;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 @Slf4j
@@ -48,9 +48,28 @@ public class DeliveryH2Repository implements DeliveryRepository {
         return DeliveryDto.newDelivery(savedDto, mapper);
     }
 
+    @Override
+    public List<Delivery> findAll(int pageNo, int pageSize) {
+        Pageable pageRequest = PageRequest.of(pageNo, pageSize);
+        Page<DeliveryDto> page = repository.findAll(pageRequest);
+        return page.stream()
+                .map(dto -> DeliveryDto.newDelivery(dto, mapper))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Delivery> findAllByStatus(DeliveryStatus.Type type, int pageNo, int pageSize) {
+        Pageable pageRequest = PageRequest.of(pageNo, pageSize);
+        Page<DeliveryDto> page = repository.findAllByStatus(type.name(), pageRequest);
+        return page.stream()
+                .map(dto -> DeliveryDto.newDelivery(dto, mapper))
+                .collect(Collectors.toList());
+    }
+
     @Repository
-    public interface InternalRepository extends CrudRepository<DeliveryDto,String> {
+    public interface InternalRepository extends PagingAndSortingRepository<DeliveryDto,String> {
         Optional<DeliveryDto> findByOrderNo(String orderNo);
+        Page<DeliveryDto> findAllByStatus(String status, Pageable pageable);
     }
 
     @Entity
@@ -61,15 +80,17 @@ public class DeliveryH2Repository implements DeliveryRepository {
         @Id
         private String id;
         private String orderNo;
+        private String status;
         @Column(length = 5000)
         private String jsonStr;
 
         private static DeliveryDto of(Delivery delivery, ObjectMapper mapper) {
             String id = delivery.getId().getValue();
             String orderNo = delivery.getOrderNo().getValue();
+            String status = delivery.getStatus().getType().name();
             try {
                 String jsonStr = mapper.writeValueAsString(delivery);
-                return new DeliveryDto(id, orderNo, jsonStr);
+                return new DeliveryDto(id, orderNo, status, jsonStr);
             } catch (JsonProcessingException e) {
                 log.error("failed to serialize", e);
                 throw new RuntimeException("failed to serialize");

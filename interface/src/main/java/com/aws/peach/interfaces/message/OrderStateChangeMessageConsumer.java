@@ -51,7 +51,7 @@ public class OrderStateChangeMessageConsumer implements MessageConsumer<OrderSta
         private static CreateDeliveryInput.OrderProductDto newOrderProduct(OrderStateChangeMessage.OrderLineDto ol) {
             return CreateDeliveryInput.OrderProductDto.builder()
                     .name(ol.getOrderProduct().getProductName())
-                    .qty(ol.getQuantity())
+                    .quantity(ol.getQuantity())
                     .build();
         }
 

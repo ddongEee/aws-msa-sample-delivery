@@ -1,4 +1,4 @@
-package com.aws.peach.interfaces.api;
+package com.aws.peach.interfaces.api.model;
 
 import com.aws.peach.application.CreateDeliveryInput;
 import com.aws.peach.domain.delivery.Address;
@@ -75,7 +75,7 @@ public class ReceiveDeliveryOrderRequest {
         public static CreateDeliveryInput.OrderProductDto newOrderProductDto(OrderLine o) {
             return CreateDeliveryInput.OrderProductDto.builder()
                     .name(o.orderProduct.productName)
-                    .qty(o.quantity)
+                    .quantity(o.quantity)
                     .build();
         }
     }

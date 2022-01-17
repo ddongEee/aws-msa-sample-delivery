@@ -13,15 +13,9 @@ A Postman collection is available under the `doc` directory.
 5. Request Delivery Complete (temporary fix) (`PUT /delivery/{deliverId}/complete`)
    - delivery state change event published
 
-## kafka local config
-```
-docker-compose -d up
-
-docker-compose exec broker \                                                                                                                                  ✘ INT 1h 36m 23s
-kafka-console-consumer --bootstrap-server localhost:29092 \
---topic delivery.status.change --from-beginning
-
-docker-compose exec broker \                                                                                                                                  ✘ INT 1h 36m 23s
-kafka-console-consumer --bootstrap-server localhost:29092 \
---topic order_state_change --from-beginning
-```
+## delivery search APIs
+1. Find Delivery by delivery ID (`GET /delivery/{deliverId}`)
+2. Find delivery by order number (`GET /delivery?orderNo={orderNo}`)
+3. Search deliveries by state (`GET /delivery/searches?pageNo={0}&pageSize={10}&state={state}`)
+   - Find all: `GET /delivery/searches?pageNo={0}&pageSize={10}`
+   - Find by state: `state={paid, preparing, packaging, shipped, delivered}`

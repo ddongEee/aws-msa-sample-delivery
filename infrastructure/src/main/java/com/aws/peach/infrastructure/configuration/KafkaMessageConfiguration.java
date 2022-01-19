@@ -4,6 +4,7 @@ import com.aws.peach.domain.delivery.DeliveryChangeEvent;
 import com.aws.peach.domain.order.OrderStateChangeMessage;
 import com.aws.peach.domain.support.MessageConsumer;
 import com.aws.peach.domain.support.MessageProducer;
+import com.aws.peach.domain.test.TestMessage;
 import com.aws.peach.infrastructure.kafka.KafkaInfras;
 import com.aws.peach.infrastructure.kafka.KafkaMessageListenerContainerFactory;
 import com.aws.peach.infrastructure.kafka.KafkaMessageProducerFactory;
@@ -38,8 +39,24 @@ public class KafkaMessageConfiguration {
     }
 
     @Bean
+    public KafkaMessageListenerContainer<String, TestMessage> testMessageListenerContainer(
+            @Value("${kafka.topic.delivery-test-message}") final String topic,
+            final MessageConsumer<TestMessage> messageConsumer,
+            final ConsumerFactory<String,TestMessage> consumerFactory,
+            final KafkaTemplate<String, TestMessage> kafkaTemplate) {
+
+        return this.listenerContainerFactory.create(topic, messageConsumer, consumerFactory, kafkaTemplate);
+    }
+
+    @Bean
     public MessageProducer<String, DeliveryChangeEvent> deliveryChangeEventProducer(final KafkaTemplate<String, DeliveryChangeEvent> kafkaTemplate,
                                                                                     @Value("${kafka.topic.delivery-event}") final String topic) {
+        return this.producerFactory.create(kafkaTemplate, topic);
+    }
+
+    @Bean
+    public MessageProducer<String, TestMessage> testMessageProducer(final KafkaTemplate<String, TestMessage> kafkaTemplate,
+                                                                    @Value("${kafka.topic.delivery-test-message}") final String topic) {
         return this.producerFactory.create(kafkaTemplate, topic);
     }
 }

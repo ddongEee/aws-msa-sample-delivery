@@ -4,7 +4,6 @@ import com.aws.peach.domain.delivery.exception.DeliveryException;
 import com.aws.peach.domain.support.MessageConsumer;
 import com.aws.peach.domain.support.exception.InvalidMessageException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.*;
 import org.springframework.kafka.support.serializer.StringOrBytesSerializer;
-import org.springframework.kafka.transaction.KafkaTransactionManager;
 import org.springframework.stereotype.Component;
 import org.springframework.util.backoff.FixedBackOff;
 
@@ -26,14 +24,11 @@ import java.util.Map;
 @Component
 public class KafkaMessageListenerContainerFactory {
 
-    private final KafkaTransactionManager kafkaTransactionManager;
     private final KafkaTemplate<String, Object> stringOrBytesTemplate;
 
     public KafkaMessageListenerContainerFactory(@Value("${spring.kafka.bootstrap-servers}") final String bootstrapServers,
                                                 @Value("${spring.kafka.producer.transaction-id-prefix}") final String transactionalIdPrefix,
-                                                @Value("${spring.kafka.producer.acks}") final String acks,
-                                                final KafkaTransactionManager kafkaTransactionManager) {
-        this.kafkaTransactionManager = kafkaTransactionManager;
+                                                @Value("${spring.kafka.producer.acks}") final String acks) {
         this.stringOrBytesTemplate = stringOrBytesTemplate(bootstrapServers, transactionalIdPrefix, acks);
     }
 
@@ -59,7 +54,6 @@ public class KafkaMessageListenerContainerFactory {
     private <M> ContainerProperties containerProps(final String topic, final MessageConsumer<M> messageConsumer) {
         ContainerProperties containerProps = new ContainerProperties(topic);
         containerProps.setMessageListener((MessageListener<String,M>) data -> messageConsumer.consume(data.value()));
-        containerProps.setTransactionManager(kafkaTransactionManager);
         return containerProps;
     }
 

@@ -5,6 +5,7 @@ import com.aws.peach.application.DeliveryService;
 import com.aws.peach.domain.delivery.Address;
 import com.aws.peach.domain.delivery.OrderNo;
 import com.aws.peach.domain.order.OrderStateChangeMessage;
+import com.aws.peach.domain.support.Message;
 import com.aws.peach.domain.support.MessageConsumer;
 import org.springframework.stereotype.Component;
 
@@ -21,10 +22,11 @@ public class OrderStateChangeMessageConsumer implements MessageConsumer<OrderSta
     }
 
     @Override
-    public void consume(OrderStateChangeMessage value) {
+    public void consume(Message<OrderStateChangeMessage> message) {
         // todo message validation
-        if (value.isPaidStatus()) {
-            CreateDeliveryInput input = OrderStateChangeMessageConsumer.Mapper.newCreateDeliveryInput(value);
+        OrderStateChangeMessage data = message.getPayload();
+        if (data.isPaidStatus()) {
+            CreateDeliveryInput input = OrderStateChangeMessageConsumer.Mapper.newCreateDeliveryInput(data);
             this.deliveryService.createDeliveryOrder(input);
         }
     }

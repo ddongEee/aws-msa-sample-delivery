@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 @Service
+@Transactional(transactionManager = "transactionManager")
 public class DeliveryService {
 
     private final DeliveryRepository repository;
@@ -26,7 +27,6 @@ public class DeliveryService {
         this.testMessageProducer = testMessageProducer;
     }
 
-    @Transactional(transactionManager = "transactionManager")
     public Delivery createDeliveryOrder(CreateDeliveryInput input) {
         Delivery delivery = CreateDeliveryInput.newDelivery(input, getSenderAddress());
         Optional<Delivery> existingDelivery = repository.findByOrderNo(delivery.getOrderNo());
@@ -47,28 +47,24 @@ public class DeliveryService {
                 .build();
     }
 
-    @Transactional(transactionManager = "transactionManager")
     public Delivery prepare(final DeliveryId deliveryId) {
         Delivery delivery = updateDeliveryStatus(deliveryId, Delivery::prepare);
         publishEvent(delivery);
         return delivery;
     }
 
-    @Transactional(transactionManager = "transactionManager")
     public Delivery pack(final DeliveryId deliveryId) {
         Delivery delivery = updateDeliveryStatus(deliveryId, Delivery::pack);
         publishEvent(delivery);
         return delivery;
     }
 
-    @Transactional(transactionManager = "transactionManager")
     public Delivery ship(final DeliveryId deliveryId) {
         Delivery delivery = updateDeliveryStatus(deliveryId, Delivery::ship);
         publishEvent(delivery);
         return delivery;
     }
 
-    @Transactional(transactionManager = "transactionManager")
     public Delivery complete(final DeliveryId deliveryId) {
         Delivery delivery = updateDeliveryStatus(deliveryId, Delivery::complete);
         publishEvent(delivery);

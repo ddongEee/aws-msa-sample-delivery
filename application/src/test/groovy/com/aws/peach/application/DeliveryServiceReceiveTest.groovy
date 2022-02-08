@@ -10,6 +10,7 @@ import com.aws.peach.domain.delivery.Order
 import com.aws.peach.domain.delivery.OrderNo
 import com.aws.peach.domain.delivery.exception.DeliveryAlreadyExistsException
 import com.aws.peach.domain.support.MessageProducer
+import com.aws.peach.domain.test.TestMessage
 import spock.lang.Specification
 
 import java.time.Instant
@@ -19,10 +20,12 @@ class DeliveryServiceReceiveTest extends Specification {
     // test data
     OrderNo orderNo = new OrderNo("oid")
     MessageProducer<String, DeliveryChangeEvent> messageProducer
+    MessageProducer<String, TestMessage> messageProducer2
     CreateDeliveryInput createInput
 
     def setup() {
         messageProducer = Mock()
+        messageProducer2 = Mock()
 
         Instant orderCreatedAt = Instant.now()
         String ordererId = "1"
@@ -55,7 +58,7 @@ class DeliveryServiceReceiveTest extends Specification {
         given:
         Delivery existingDelivery = fakeExistingDelivery(orderNo)
         DeliveryRepository repository = createTestRepository(existingDelivery)
-        DeliveryService service = new DeliveryService(repository, messageProducer)
+        DeliveryService service = new DeliveryService(repository, messageProducer, messageProducer2)
 
         when:
         service.createDeliveryOrder(createInput)
@@ -68,7 +71,7 @@ class DeliveryServiceReceiveTest extends Specification {
         given:
         Delivery existingDelivery = null
         DeliveryRepository repository = createTestRepository(existingDelivery)
-        DeliveryService service = new DeliveryService(repository, messageProducer)
+        DeliveryService service = new DeliveryService(repository, messageProducer, messageProducer2)
 
         when:
         Delivery result = service.createDeliveryOrder(createInput)

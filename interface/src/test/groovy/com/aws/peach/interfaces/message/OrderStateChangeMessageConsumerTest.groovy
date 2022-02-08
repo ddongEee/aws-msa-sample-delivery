@@ -3,6 +3,7 @@ package com.aws.peach.interfaces.message
 import com.aws.peach.application.CreateDeliveryInput
 import com.aws.peach.application.DeliveryService
 import com.aws.peach.domain.order.OrderStateChangeMessage
+import com.aws.peach.domain.support.Message
 import spock.lang.Specification
 
 class OrderStateChangeMessageConsumerTest extends Specification {
@@ -20,7 +21,7 @@ class OrderStateChangeMessageConsumerTest extends Specification {
         OrderStateChangeMessageConsumer consumer = createOrderStateChangeMessageConsumer()
 
         when:
-        consumer.consume(msg)
+        consumer.consume(new Message<OrderStateChangeMessage>(null, null, msg))
 
         then:
         1 * deliveryService.createDeliveryOrder({

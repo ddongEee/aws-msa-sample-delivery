@@ -8,10 +8,12 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
+import spock.lang.Ignore
 import spock.lang.Specification
 
 import static com.aws.peach.interfaces.api.ApiTestUtil.generateNewOrderNo
 
+@Ignore
 @ApiTest
 class DeliveryApiTest extends Specification {
 

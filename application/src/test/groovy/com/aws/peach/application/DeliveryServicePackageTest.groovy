@@ -9,16 +9,19 @@ import com.aws.peach.domain.delivery.OrderNo
 import com.aws.peach.domain.delivery.exception.DeliveryNotFoundException
 import com.aws.peach.domain.delivery.exception.DeliveryStateException
 import com.aws.peach.domain.support.MessageProducer
+import com.aws.peach.domain.test.TestMessage
 import spock.lang.Specification
 
 class DeliveryServicePackageTest extends Specification {
 
     DeliveryId deliveryId = new DeliveryId("123")
     OrderNo orderNo = new OrderNo("o123")
-    MessageProducer<String, DeliveryChangeEvent> messageProducer;
+    MessageProducer<String, DeliveryChangeEvent> messageProducer
+    MessageProducer<String, TestMessage> messageProducer2
 
     def setup() {
         messageProducer = Mock()
+        messageProducer2 = Mock()
     }
 
     def stubDeliveryRepository(DeliveryId deliveryId, Delivery retrievedDelivery) {
@@ -31,7 +34,7 @@ class DeliveryServicePackageTest extends Specification {
         given:
         Delivery retrievedDelivery = null
         DeliveryRepository repository = stubDeliveryRepository(deliveryId, retrievedDelivery)
-        DeliveryService service = new DeliveryService(repository, messageProducer)
+        DeliveryService service = new DeliveryService(repository, messageProducer,messageProducer2)
 
         when:
         service.pack(deliveryId)
@@ -45,7 +48,7 @@ class DeliveryServicePackageTest extends Specification {
         DeliveryStatus status = new DeliveryStatus(DeliveryStatus.Type.SHIPPED)
         Delivery retrievedDelivery = Delivery.builder().id(deliveryId).status(status).build()
         DeliveryRepository repository = stubDeliveryRepository(deliveryId, retrievedDelivery)
-        DeliveryService service = new DeliveryService(repository, messageProducer)
+        DeliveryService service = new DeliveryService(repository, messageProducer, messageProducer2)
 
         when:
         service.pack(deliveryId)
@@ -58,7 +61,7 @@ class DeliveryServicePackageTest extends Specification {
         given:
         Delivery retrievedDelivery = mockRetrievedDelivery(deliveryId, orderNo, DeliveryStatus.Type.PREPARING)
         DeliveryRepository repository = stubDeliveryRepository(deliveryId, retrievedDelivery)
-        DeliveryService service = new DeliveryService(repository, messageProducer)
+        DeliveryService service = new DeliveryService(repository, messageProducer, messageProducer2)
 
         when:
         Delivery result = service.pack(deliveryId)

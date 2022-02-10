@@ -1,12 +1,12 @@
 plugins {
-    id 'org.springframework.boot' version '2.5.0' apply false
+    id 'org.springframework.boot' version '2.6.2' apply false
     id 'io.spring.dependency-management' version '1.0.11.RELEASE' apply false
     id 'java'
 }
 
 group = 'com.aws.peach'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
+sourceCompatibility = '11'
 
 
 allprojects {
@@ -19,6 +19,7 @@ subprojects {
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'java'
+    apply plugin: 'groovy'
 
     configurations {
         compileOnly {
@@ -31,12 +32,19 @@ subprojects {
 
     group = 'com.aws.peach'
     version = '0.0.1-SNAPSHOT'
-    sourceCompatibility = '1.8'
+    sourceCompatibility = '11'
 
     dependencies {
         implementation 'org.springframework.boot:spring-boot-starter'
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
+        testImplementation('org.springframework.boot:spring-boot-starter-test')
+        testImplementation group: 'org.spockframework', name: 'spock-core', version: '2.0-groovy-3.0'
+        testImplementation group: 'org.spockframework', name: 'spock-spring', version: '2.0-groovy-3.0'
+    }
+
+    test {
+        useJUnitPlatform()
     }
 }
 
@@ -49,14 +57,16 @@ project(':interface') {
         implementation project(':domain')
         implementation project(':infrastructure')
         implementation 'org.springframework.boot:spring-boot-starter-web'
-        implementation 'org.springframework.kafka:spring-kafka:2.7.2'
+        implementation 'org.springframework.boot:spring-boot-starter-validation'
+        implementation 'org.springframework.kafka:spring-kafka'
+        testImplementation 'org.springframework.kafka:spring-kafka-test'
     }
 }
 
 project(':application') {
     dependencies {
         implementation project(':domain')
-        //implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     }
 }
 
@@ -75,8 +85,9 @@ project(':infrastructure') {
         implementation project(':domain')
         implementation group: 'com.github.derjust', name: 'spring-data-dynamodb', version: '5.1.0'
         implementation 'org.springframework.kafka:spring-kafka'
-        runtimeOnly 'mysql:mysql-connector-java'
-        //implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//        runtimeOnly 'mysql:mysql-connector-java'
+        runtimeOnly 'com.h2database:h2:2.0.202'
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
         implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
 
 //        implementation group: 'software.amazon.awssdk', name: 'auth', version: '2.16.92'

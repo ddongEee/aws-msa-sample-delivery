@@ -1,24 +1,21 @@
-# peach
+# Peach
 event driven microservice
-# 프로젝트 셋팅
-- (임시) application vmOption 에 아래 설정
-    - todo : 환경 구분하기
-    - todo : 다른방식으로 secret 주입
-```
--Dspring.config.location="file:///Users/kmhak/.testprops/application.properties"
-```
 
-# Setting local Kafka via docker
+## delivery backoffice workflow
+A Postman collection is available under the `doc` directory.
+1. Request Delivery Order (`POST /delivery`)
+2. Request Delivery Preparing (`PUT /delivery/{deliverId}/prepare`)
+   - delivery state change message published
+3. Request Delivery Packaging (`PUT /delivery/{deliverId}/package`)
+   - delivery state change message published
+4. Request Delivery Shipping (`PUT /delivery/{deliverId}/ship`)
+   - delivery state change message published
+5. Request Delivery Complete (temporary fix) (`PUT /delivery/{deliverId}/complete`)
+   - delivery state change message published
 
-
-
-# 기타 소소한 project 기본 셋팅
-- Edit custom vm options : todo : (업데이트 하기)
-- Show excluded file 를 "off"
-
-# 적용된 기술 및 개념
-- layered clean architecture
-- java8 ?  
-- spring boot
-- kafka
-- lombok
+## delivery search APIs
+1. Find Delivery by delivery ID (`GET /delivery/{deliverId}`)
+2. Find delivery by order number (`GET /delivery?orderNo={orderNo}`)
+3. Search deliveries by state (`GET /delivery/searches?pageNo={0}&pageSize={10}&state={state}`)
+   - Find all: `GET /delivery/searches?pageNo={0}&pageSize={10}`
+   - Find by state: `state={paid, preparing, packaging, shipped, delivered}`

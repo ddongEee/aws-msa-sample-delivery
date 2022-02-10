@@ -1,29 +1,88 @@
 package com.aws.peach.application;
 
-import com.aws.peach.domain.delivery.Order;
-import org.springframework.stereotype.Component;
+import com.aws.peach.domain.delivery.*;
+import com.aws.peach.domain.delivery.exception.DeliveryAlreadyExistsException;
+import com.aws.peach.domain.delivery.exception.DeliveryNotFoundException;
+import com.aws.peach.domain.support.MessageProducer;
+import com.aws.peach.domain.test.TestMessage;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@Component
-public class DeliveryService { // 백오피스
+import java.util.Optional;
+import java.util.function.Consumer;
 
-    public void receiveOrder(Order order) {
-        // 1. 주문 유효성 검사 수행 (예: 주소 확인)
-        // 2-1. 성공시 배송 요청 내역 저장 (DB)
-        // 2-2. 실패시 자세한 오류 내역을 이력으로 저장 (DB)
+@Service
+@Transactional(transactionManager = "transactionManager")
+public class DeliveryService {
+
+    private final DeliveryRepository repository;
+    private final MessageProducer<String, DeliveryChangeMessage> messageProducer;
+    private final MessageProducer<String, TestMessage> testMessageProducer;
+
+    public DeliveryService(final DeliveryRepository repository,
+                           final MessageProducer<String, DeliveryChangeMessage> messageProducer,
+                           final MessageProducer<String, TestMessage> testMessageProducer) {
+        this.repository = repository;
+        this.messageProducer = messageProducer;
+        this.testMessageProducer = testMessageProducer;
     }
 
-    public void retrieveShipping() {
-        // - shipment id 로 배송 이력을 조회할 수 있다
-        // - order id 로 배송 이력을 조회할 수 있다
-        // - 시간순으로 배송 이력을 정렬할 수 있다
-        // - 상태 기준으로 배송 이력을 조회할 수 있다
+    public Delivery createDeliveryOrder(CreateDeliveryInput input) {
+        Delivery delivery = CreateDeliveryInput.newDelivery(input, getSenderAddress());
+        Optional<Delivery> existingDelivery = repository.findByOrderNo(delivery.getOrderNo());
+        if (existingDelivery.isPresent()) {
+            throw new DeliveryAlreadyExistsException(existingDelivery.get().getId());
+        }
+        Delivery deliveryResult = repository.save(delivery);
+        testMessageProducer.send(null, new TestMessage("test", "test"));
+        return deliveryResult;
     }
 
-    public void startShipping() {
-        // - 해당 배송 이력의 상태를 업데이트 한다
+    private Address getSenderAddress() {// TODO: another service
+        return Address.builder()
+                .name("Good Farmer")
+                .telephone("010-1111-2222")
+                .city("Blue Mountain")
+                .address1("Pine Valley 123")
+                .build();
     }
 
-    public void completeShipping() {
-        // - 해당 배송 이력의 상태를 업데이트 한다
+    public Delivery prepare(final DeliveryId deliveryId) {
+        Delivery delivery = updateDeliveryStatus(deliveryId, Delivery::prepare);
+        publishMessage(delivery);
+        return delivery;
+    }
+
+    public Delivery pack(final DeliveryId deliveryId) {
+        Delivery delivery = updateDeliveryStatus(deliveryId, Delivery::pack);
+        publishMessage(delivery);
+        return delivery;
+    }
+
+    public Delivery ship(final DeliveryId deliveryId) {
+        Delivery delivery = updateDeliveryStatus(deliveryId, Delivery::ship);
+        publishMessage(delivery);
+        return delivery;
+    }
+
+    public Delivery complete(final DeliveryId deliveryId) {
+        Delivery delivery = updateDeliveryStatus(deliveryId, Delivery::complete);
+        publishMessage(delivery);
+        return delivery;
+    }
+
+    private Delivery updateDeliveryStatus(final DeliveryId deliveryId, final Consumer<Delivery> updater) {
+        Optional<Delivery> delivery = repository.findById(deliveryId);
+        delivery.ifPresent(delivery1 -> {
+            updater.accept(delivery1);
+            repository.save(delivery1);
+        });
+        return delivery.orElseThrow(() -> new DeliveryNotFoundException(deliveryId));
+    }
+
+    private void publishMessage(Delivery delivery) {
+        DeliveryChangeMessage message = DeliveryChangeMessage.of(delivery);
+        messageProducer.send(message.getDeliveryId(), message);
+        testMessageProducer.send(null, new TestMessage("test", "test"));
     }
 }

@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 @ToString
 @Builder
 @Getter
-public class DeliveryChangeEvent {
+public class DeliveryChangeMessage {
     private final String deliveryId;
     private final String orderNo;
     private final Address sendingAddress;
@@ -18,8 +18,8 @@ public class DeliveryChangeEvent {
     private final String status;
     private final String updatedAt;
 
-    public static DeliveryChangeEvent of(Delivery delivery) {
-        return DeliveryChangeEvent.builder()
+    public static DeliveryChangeMessage of(Delivery delivery) {
+        return DeliveryChangeMessage.builder()
                 .deliveryId(delivery.getId().getValue())
                 .orderNo(delivery.getOrderNo().getValue())
                 .sendingAddress(delivery.getSender())

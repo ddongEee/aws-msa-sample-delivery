@@ -1,7 +1,7 @@
 package com.aws.peach.application
 
 import com.aws.peach.domain.delivery.Delivery
-import com.aws.peach.domain.delivery.DeliveryChangeEvent
+import com.aws.peach.domain.delivery.DeliveryChangeMessage
 import com.aws.peach.domain.delivery.DeliveryId
 import com.aws.peach.domain.delivery.DeliveryRepository
 import com.aws.peach.domain.delivery.DeliveryStatus
@@ -16,7 +16,7 @@ class DeliveryServicePackageTest extends Specification {
 
     DeliveryId deliveryId = new DeliveryId("123")
     OrderNo orderNo = new OrderNo("o123")
-    MessageProducer<String, DeliveryChangeEvent> messageProducer
+    MessageProducer<String, DeliveryChangeMessage> messageProducer
     MessageProducer<String, TestMessage> messageProducer2
 
     def setup() {
@@ -68,7 +68,7 @@ class DeliveryServicePackageTest extends Specification {
 
         then:
         1 * retrievedDelivery.pack()
-        1 * messageProducer.send(deliveryId.value, _ as DeliveryChangeEvent)
+        1 * messageProducer.send(deliveryId.value, _ as DeliveryChangeMessage)
     }
 
     Delivery mockRetrievedDelivery(DeliveryId deliveryId, OrderNo orderNo, DeliveryStatus.Type statusType) {

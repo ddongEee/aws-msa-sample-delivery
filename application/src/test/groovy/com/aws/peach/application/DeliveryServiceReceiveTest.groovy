@@ -2,7 +2,7 @@ package com.aws.peach.application
 
 import com.aws.peach.domain.delivery.Address
 import com.aws.peach.domain.delivery.Delivery
-import com.aws.peach.domain.delivery.DeliveryChangeEvent
+import com.aws.peach.domain.delivery.DeliveryChangeMessage
 import com.aws.peach.domain.delivery.DeliveryId
 import com.aws.peach.domain.delivery.DeliveryRepository
 import com.aws.peach.domain.delivery.DeliveryStatus
@@ -19,7 +19,7 @@ class DeliveryServiceReceiveTest extends Specification {
 
     // test data
     OrderNo orderNo = new OrderNo("oid")
-    MessageProducer<String, DeliveryChangeEvent> messageProducer
+    MessageProducer<String, DeliveryChangeMessage> messageProducer
     MessageProducer<String, TestMessage> messageProducer2
     CreateDeliveryInput createInput
 

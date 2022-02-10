@@ -16,11 +16,11 @@ import java.util.function.Consumer;
 public class DeliveryService {
 
     private final DeliveryRepository repository;
-    private final MessageProducer<String, DeliveryChangeEvent> messageProducer;
+    private final MessageProducer<String, DeliveryChangeMessage> messageProducer;
     private final MessageProducer<String, TestMessage> testMessageProducer;
 
     public DeliveryService(final DeliveryRepository repository,
-                           final MessageProducer<String, DeliveryChangeEvent> messageProducer,
+                           final MessageProducer<String, DeliveryChangeMessage> messageProducer,
                            final MessageProducer<String, TestMessage> testMessageProducer) {
         this.repository = repository;
         this.messageProducer = messageProducer;
@@ -49,25 +49,25 @@ public class DeliveryService {
 
     public Delivery prepare(final DeliveryId deliveryId) {
         Delivery delivery = updateDeliveryStatus(deliveryId, Delivery::prepare);
-        publishEvent(delivery);
+        publishMessage(delivery);
         return delivery;
     }
 
     public Delivery pack(final DeliveryId deliveryId) {
         Delivery delivery = updateDeliveryStatus(deliveryId, Delivery::pack);
-        publishEvent(delivery);
+        publishMessage(delivery);
         return delivery;
     }
 
     public Delivery ship(final DeliveryId deliveryId) {
         Delivery delivery = updateDeliveryStatus(deliveryId, Delivery::ship);
-        publishEvent(delivery);
+        publishMessage(delivery);
         return delivery;
     }
 
     public Delivery complete(final DeliveryId deliveryId) {
         Delivery delivery = updateDeliveryStatus(deliveryId, Delivery::complete);
-        publishEvent(delivery);
+        publishMessage(delivery);
         return delivery;
     }
 
@@ -80,9 +80,9 @@ public class DeliveryService {
         return delivery.orElseThrow(() -> new DeliveryNotFoundException(deliveryId));
     }
 
-    private void publishEvent(Delivery delivery) {
-        DeliveryChangeEvent event = DeliveryChangeEvent.of(delivery);
-        messageProducer.send(event.getDeliveryId(), event);
+    private void publishMessage(Delivery delivery) {
+        DeliveryChangeMessage message = DeliveryChangeMessage.of(delivery);
+        messageProducer.send(message.getDeliveryId(), message);
         testMessageProducer.send(null, new TestMessage("test", "test"));
     }
 }

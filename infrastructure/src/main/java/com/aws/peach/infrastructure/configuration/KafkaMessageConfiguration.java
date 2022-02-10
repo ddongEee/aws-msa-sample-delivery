@@ -1,6 +1,6 @@
 package com.aws.peach.infrastructure.configuration;
 
-import com.aws.peach.domain.delivery.DeliveryChangeEvent;
+import com.aws.peach.domain.delivery.DeliveryChangeMessage;
 import com.aws.peach.domain.order.OrderStateChangeMessage;
 import com.aws.peach.domain.support.MessageConsumer;
 import com.aws.peach.domain.support.MessageProducer;
@@ -49,8 +49,8 @@ public class KafkaMessageConfiguration {
     }
 
     @Bean
-    public MessageProducer<String, DeliveryChangeEvent> deliveryChangeEventProducer(final KafkaTemplate<String, DeliveryChangeEvent> kafkaTemplate,
-                                                                                    @Value("${kafka.topic.delivery-event}") final String topic) {
+    public MessageProducer<String, DeliveryChangeMessage> deliveryChangeMessageProducer(final KafkaTemplate<String, DeliveryChangeMessage> kafkaTemplate,
+                                                                                       @Value("${kafka.topic.delivery-change}") final String topic) {
         return this.producerFactory.create(kafkaTemplate, topic);
     }
 

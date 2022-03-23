@@ -8,12 +8,10 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.jdbc.Sql
-import spock.lang.Ignore
 import spock.lang.Specification
 
 import java.util.stream.Collectors
 
-@Ignore
 @ApiTest
 @Sql("/sql/init_delivery_query_api_test.sql")
 class DeliveryQueryApiTest extends Specification {

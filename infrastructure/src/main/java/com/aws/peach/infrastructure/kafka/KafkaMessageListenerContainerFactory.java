@@ -11,6 +11,7 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.common.utils.Bytes;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.*;
 import org.springframework.kafka.support.serializer.StringOrBytesSerializer;
@@ -28,18 +29,19 @@ public class KafkaMessageListenerContainerFactory {
 
     private final KafkaTemplate<String, Object> stringOrBytesTemplate;
 
-    public KafkaMessageListenerContainerFactory(@Value("${spring.kafka.bootstrap-servers}") final String bootstrapServers,
-                                                @Value("${spring.kafka.producer.transaction-id-prefix}") final String transactionalIdPrefix,
-                                                @Value("${spring.kafka.producer.acks}") final String acks) {
-        this.stringOrBytesTemplate = stringOrBytesTemplate(bootstrapServers, transactionalIdPrefix, acks);
+    public KafkaMessageListenerContainerFactory(KafkaProperties properties,
+                                                @Value("${spring.kafka.producer.transaction-id-prefix:#{null}}") final String transactionalIdPrefix) {
+        this.stringOrBytesTemplate = stringOrBytesTemplate(properties, transactionalIdPrefix);
     }
 
-    private KafkaTemplate<String, Object> stringOrBytesTemplate(final String bootstrapServers, final String txIdPrefix,final String acks) {
+    private KafkaTemplate<String, Object> stringOrBytesTemplate(final KafkaProperties properties, final String txIdPrefix) {
+        Map<String, Object> producerFactoryProps = properties.buildProducerProperties();
+        if (txIdPrefix != null) {
+            producerFactoryProps.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, txIdPrefix);
+        }
+
         DefaultKafkaProducerFactory<String, Object> producerFactory = new DefaultKafkaProducerFactory<>(
-                Map.of(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
-                        ProducerConfig.TRANSACTIONAL_ID_CONFIG, txIdPrefix,
-                        ProducerConfig.ACKS_CONFIG, acks),
-                new StringSerializer(), new StringOrBytesSerializer());
+                producerFactoryProps, new StringSerializer(), new StringOrBytesSerializer());
         return new KafkaTemplate<>(producerFactory);
     }
 
